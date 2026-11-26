@@ -13,10 +13,10 @@ The project is open source, ships through the App Store, and wants hosted forks 
 | Part | Licence | Reason |
 | --- | --- | --- |
 | `game-core`, `games/*`, `bots`, `session`, `cli`, `ffi`, `wasm`, apps | MPL-2.0 | File-level copyleft, compatible with App Store distribution |
-| `server` | AGPL-3.0 | Hosted forks must publish their changes |
+| `server` | AGPL-3.0-or-later | Hosted forks must publish their changes; "or later" allows moving to a future AGPL version without every contributor's consent |
 | Artwork, decks | CC BY-SA 4.0 | Open reuse with attribution |
 | Name and logo | Trademark (once registered) | Protects against store clones |
-| Contributions | DCO sign-off | Keeps relicensing options open |
+| Contributions | DCO sign-off | Each contributor certifies the right to submit the work under the project's licence |
 
 ## Consequences
 
@@ -26,4 +26,6 @@ The project is open source, ships through the App Store, and wants hosted forks 
 
 ## Open points
 
-- Lawyer review of MPL-2.0 + AGPL-3.0 split and App Store terms.
+- Lawyer review of MPL-2.0 + AGPL-3.0-or-later split and App Store terms.
+- A DCO grants the project no right to relicense contributions; decide whether a CLA is needed to keep that option.
+- Copyright status of AI-written code, which affects who can consent to a licence change.

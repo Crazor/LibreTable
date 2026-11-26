@@ -29,9 +29,9 @@ allow = [
     "CC0-1.0",
     "MPL-2.0",
 ]
-# The `server` crate will be AGPL-3.0 (ADR-0002). When it is added, allow that
-# licence for it alone here (-only vs -or-later is still open), e.g.:
-# exceptions = [{ crate = "libretable-server", allow = ["AGPL-3.0-only"] }]
+# The `server` crate will be AGPL-3.0-or-later (ADR-0002). When it is added,
+# allow that licence for it alone here:
+# exceptions = [{ crate = "libretable-server", allow = ["AGPL-3.0-or-later"] }]
 
 [licenses.private]
 # Our own unpublished crates are still checked against the allow list.
