@@ -29,4 +29,3 @@ LibreTable (working name) is an open-source platform for turn-based card, dice a
 - Before finishing, `cargo fmt --all` and `cargo clippy --workspace --all-targets -- -D warnings` must pass (a Stop hook checks this).
 - Prove behaviour with tests, the conformance suite, the CLI and the text renderer rather than by inspection.
 - When a requirement is unclear or a rule is ambiguous, ask the architect instead of guessing.
-- For larger changes, run the `reviewer` subagent before handing over.
