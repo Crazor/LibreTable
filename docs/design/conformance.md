@@ -1,6 +1,31 @@
 # conformance
 
-The `libretable-conformance` crate will hold the generic conformance suite (milestone 1, issue 4) described in [architecture: testing & conformance suite](../architecture.md#testing--conformance-suite). It is a development tool and never shipped.
+The `libretable-conformance` crate holds the generic conformance suite described in [architecture: testing & conformance suite](../architecture.md#testing--conformance-suite). It is a development tool and never shipped.
+
+## Harness
+
+`conformance::run(&Suite<G>)` plays `matches` random matches for every `(config, seats)` setup of a game and returns a `Report` or the first `Failure`. A `Suite` is a plain struct, not a trait, so a game crate can describe itself without running into the orphan rule. Besides the setups it holds:
+
+- `seed`: match seeds and the random move choices derive from it, so a run is reproducible. The driver's choices use their own `GameRng`, never the match's.
+- `step_bound(config, seats)`: the most moves plus chance resolutions a match may take.
+- `candidate_moves(state)`: moves to try besides the legal ones, so that rejection is tested. Ideally every well-formed move that could be legal somewhere in the game.
+- `hidden_variants(state, seat, rng)`: for the leak test, a few states that differ from `state` only in what is hidden from `seat`; `None` for games without hidden information.
+
+Checks at every decision point (also before each chance step) and at the end:
+
+| Check | What it verifies |
+| --- | --- |
+| Legality | `pending` is `Finished` exactly when `outcome` is `Some`; `All`/`Any` sets are non-empty and inside the match; exactly the pending seats have legal moves, without duplicates; every legal move applies; every other candidate move, every move of a non-pending seat and of a seat outside the match is rejected and leaves state and generator unchanged; the outcome has one result per seat; nothing is legal after the end. |
+| Termination | The match finishes within `step_bound`. |
+| Round trips | Config, state, every seat's and the spectator's view, legal moves, events, outcome and record survive JSON unchanged, and re-serializing gives identical text. |
+| Determinism | Replaying the record, before and after its JSON round trip, reaches the identical state and generator. |
+| Leak (scaffold) | A seat's view is identical in every declared hidden variant. |
+
+A `Failure` names the check, explains it and carries the partial record as JSON, so the failing match replays in the CLI (issue 6).
+
+Not checked yet: the binary wire encoding (once ADR-0003 is accepted), opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, the selection protocol (issue 5), bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
+
+Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 seats × 100 matches) and shows each check catching a deliberately broken game.
 
 ## Rock-paper-scissors test game
 

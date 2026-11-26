@@ -7,3 +7,6 @@
 #![forbid(unsafe_code)]
 
 pub mod rock_paper_scissors;
+pub mod suite;
+
+pub use suite::{Check, Failure, HiddenVariants, Report, Suite, run};
