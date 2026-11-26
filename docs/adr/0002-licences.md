@@ -21,7 +21,7 @@ The project is open source, ships through the App Store, and wants hosted forks 
 ## Consequences
 
 - LICENSE files per licence in the repo root; each crate declares its SPDX licence in `Cargo.toml`.
-- `cargo-deny` in CI enforces compatible dependency licences; GPL code (e.g. FreeDoko, PlayAural) is used only as a reference, never copied.
+- `cargo-deny` in CI enforces compatible dependency licences (allow list in `deny.toml`: MIT, MIT-0, Apache-2.0, Apache-2.0 WITH LLVM-exception, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unicode-3.0, CC0-1.0, MPL-2.0); GPL code (e.g. FreeDoko, PlayAural) is used only as a reference, never copied.
 - MIT/Apache-2.0 code (e.g. OpenSpiel, openschafkopf, JSkat) may be reused with attribution.
 
 ## Open points
