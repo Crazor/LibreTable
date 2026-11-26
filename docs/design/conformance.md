@@ -4,7 +4,7 @@ The `libretable-conformance` crate will hold the generic conformance suite (mile
 
 ## Rock-paper-scissors test game
 
-`conformance::rock_paper_scissors` exercises simultaneous decisions (`Pending::All`), which no shipped game in milestone 1 needs. The rules are in the module documentation; in short:
+`conformance::rock_paper_scissors` exercises simultaneous decisions (`Pending::All`), which no shipped game in milestone 1 needs. The rules are in the module documentation and were confirmed by the architect on 2026-11-26; in short:
 
 - 2 to 64 seats; variant `rounds` (at least 1, default 3).
 - Each round every pending seat throws once, in any arrival order. The game keeps the throws sealed in its state, removes each seat that threw from the pending set, and resolves when the last seat has thrown.
