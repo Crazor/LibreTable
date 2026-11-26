@@ -270,3 +270,47 @@ impl Game for RockPaperScissors {
         })
     }
 }
+
+/// The conformance suite for this game: 2, 3 and 7 seats with one and three
+/// rounds.
+#[must_use]
+pub fn suite(matches: usize, seed: libretable_game_core::Seed) -> crate::Suite<RockPaperScissors> {
+    let setups = [2, 3, 7]
+        .into_iter()
+        .filter_map(SeatCount::new)
+        .flat_map(|seats| [1, 3].map(|rounds| (Config { rounds }, seats)))
+        .collect();
+    crate::Suite {
+        setups,
+        matches,
+        seed,
+        step_bound: |config, seats| usize::from(seats.get()) * usize::from(config.rounds),
+        candidate_moves: |_| Shape::ALL.to_vec(),
+        hidden_variants: Some(hidden_variants),
+    }
+}
+
+/// Up to three states in which some other seat's sealed throw differs: the
+/// only information hidden from `seat`.
+fn hidden_variants(state: &State, seat: Seat, rng: &mut GameRng) -> Vec<State> {
+    let others: Vec<usize> = state
+        .throws
+        .iter()
+        .enumerate()
+        .filter(|&(index, throw)| throw.is_some() && index != usize::from(seat.index()))
+        .map(|(index, _)| index)
+        .collect();
+    (0..3)
+        .filter_map(|_| {
+            let &index = rng.choose(&others)?;
+            let mut variant = state.clone();
+            let throw = &mut variant.throws[index];
+            let others: Vec<Shape> = Shape::ALL
+                .into_iter()
+                .filter(|shape| Some(*shape) != *throw)
+                .collect();
+            *throw = rng.choose(&others).copied();
+            Some(variant)
+        })
+        .collect()
+}
