@@ -89,3 +89,25 @@ fn invalid_game_ids_panic() {
 fn omniscient_exists_only_in_dev() {
     assert_ne!(Observer::Omniscient, Observer::Spectator);
 }
+
+#[test]
+fn observer_visibility() {
+    let own = Observer::Seat(seat(2));
+    assert_eq!(own.seat(), Some(seat(2)));
+    assert!(own.sees_private_of(seat(2)));
+    assert!(!own.sees_private_of(seat(3)));
+    assert!(!own.sees_all());
+
+    assert_eq!(Observer::Spectator.seat(), None);
+    assert!(!Observer::Spectator.sees_private_of(seat(0)));
+    assert!(!Observer::Spectator.sees_all());
+}
+
+#[cfg(feature = "dev")]
+#[test]
+fn omniscient_sees_everything() {
+    assert_eq!(Observer::Omniscient.seat(), None);
+    assert!(Observer::Omniscient.sees_private_of(seat(0)));
+    assert!(Observer::Omniscient.sees_private_of(seat(MAX_SEATS - 1)));
+    assert!(Observer::Omniscient.sees_all());
+}
