@@ -50,6 +50,7 @@ pub trait Game {
     type State: Clone;             // full, authoritative state
     type Move: Clone + Eq + Serialize + Deserialize;
     type View: Serialize;          // what one observer may know
+    type Event: Serialize;         // what happened (per game)
 
     const ID: GameId;              // e.g. "mau-mau"
 
@@ -62,7 +63,10 @@ pub trait Game {
 
     /// Applies one move. Chance (shuffle, draw, dice) uses the rng only.
     fn apply(state: &mut Self::State, seat: Seat, mv: &Self::Move,
-             rng: &mut GameRng) -> Result<Vec<Event>, IllegalMove>;
+             rng: &mut GameRng) -> Result<Vec<Self::Event>, IllegalMove>;
+
+    /// Resolves a chance step while `pending` is `Chance`.
+    fn apply_chance(state: &mut Self::State, rng: &mut GameRng) -> Vec<Self::Event>;
 
     fn view(state: &Self::State, observer: Observer) -> Self::View;
     fn table(view: &Self::View) -> TableModel;           // generic rendering model
@@ -73,7 +77,7 @@ pub trait Game {
 
 - **Simultaneous decisions and real-time play** are first-class. `pending` returns either `All(seats)`, where every listed seat submits once and the moves resolve together (sealed bids, card passing, rock-paper-scissors), or `Any(seats)`, where any listed seat may act at any time, moves apply in arrival order and a move invalidated by a faster one is rejected (Ligretto/Nerts). Time stays outside the core: the arrival order chosen by the authoritative session is part of the move log, so real-time games remain deterministic and replayable.
 - **Out-of-turn decisions** (a defender's dice, merger decisions, trade answers, Kontra) are just changes of `pending` inside a turn. Optional reactions get a default move; timeouts live in the session, not the core.
-- **Chance** is explicit. All randomness flows through `GameRng`, a seeded, versioned PRNG owned by the session, so a game is fully defined by config, seed and move list.
+- **Chance** is explicit. All randomness flows through `GameRng`, a seeded, versioned PRNG (ChaCha12, see [design/game-core.md](design/game-core.md)) owned by the session, so a game is fully defined by config, seed and move list.
 - **Events** describe what happened (card moved, revealed, shuffled, trick won). Renderers animate from them; logs and replays read them.
 - **Teams and partnerships** (Canasta, Doppelkopf, Bridge, Skat's declarer vs. defenders) are part of `Outcome` and of the view rules from the start; partners still see only their own hands.
 - **Large move spaces.** `legal_moves` cannot always be a full list (numeric choices, any free node, rearranging all melds in tile rummy). The core also offers lazy enumeration and validation of a submitted draft (open point in ADR-0001).
