@@ -22,4 +22,12 @@ Pre-alpha. Nothing is playable yet; see [Milestone 1](docs/milestones/milestone-
 
 ## Licence
 
-To be finalised in [ADR-0002](docs/adr/0002-licences.md): MPL-2.0 for the core, games, bots and apps; AGPL-3.0 for the server; CC BY-SA 4.0 for artwork.
+See [ADR-0002](docs/adr/0002-licences.md) (legal review pending before the first public release):
+
+| Part | Licence | Text |
+| --- | --- | --- |
+| Everything except the server: core, games, bots, session, CLI, bindings, apps | MPL-2.0 | [LICENSE-MPL-2.0](LICENSE-MPL-2.0) |
+| Server | AGPL-3.0 | [LICENSE-AGPL-3.0](LICENSE-AGPL-3.0) |
+| Artwork, decks | CC BY-SA 4.0 | [LICENSE-CC-BY-SA-4.0](LICENSE-CC-BY-SA-4.0) |
+
+Each crate declares its SPDX licence in `Cargo.toml`; `cargo deny check` enforces compatible dependency licences.
