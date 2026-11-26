@@ -31,7 +31,7 @@ See [ADR-0002](docs/adr/0002-licences.md) (legal review pending before the first
 | Part | Licence | Text |
 | --- | --- | --- |
 | Everything except the server: core, games, bots, session, CLI, bindings, apps | MPL-2.0 | [LICENSE-MPL-2.0](LICENSE-MPL-2.0) |
-| Server | AGPL-3.0 | [LICENSE-AGPL-3.0](LICENSE-AGPL-3.0) |
+| Server | AGPL-3.0-or-later | [LICENSE-AGPL-3.0](LICENSE-AGPL-3.0) |
 | Artwork, decks | CC BY-SA 4.0 | [LICENSE-CC-BY-SA-4.0](LICENSE-CC-BY-SA-4.0) |
 
 Each crate declares its SPDX licence in `Cargo.toml`; `cargo deny check` enforces compatible dependency licences.
