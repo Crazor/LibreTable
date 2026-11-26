@@ -10,9 +10,9 @@ publish.workspace = true
 [dependencies]
 libretable-game-core = { path = "../game-core" }
 serde = { version = "1.0.219", default-features = false, features = ["alloc", "derive"] }
+serde_json = { version = "1.0.140", default-features = false, features = ["alloc"] }
 
 [dev-dependencies]
 # Tests need `Observer::Omniscient`. Dev-dependency features apply to test
 # builds only, never to a crate that depends on `conformance`.
 libretable-game-core = { path = "../game-core", features = ["dev"] }
-serde_json = { version = "1.0.140", default-features = false, features = ["alloc"] }
