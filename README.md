@@ -20,6 +20,10 @@ Pre-alpha. Nothing is playable yet; see [Milestone 1](docs/milestones/milestone-
 | [docs/reference-games.md](docs/reference-games.md) | What well-known games demand from the engine |
 | [docs/policies.md](docs/policies.md) | Privacy, legal and App Store constraints |
 
+## Contributing
+
+Every commit must carry a [Developer Certificate of Origin](https://developercert.org/) sign-off matching its author, which keeps relicensing options open ([ADR-0002](docs/adr/0002-licences.md)). Sign off with `git commit -s`; fix an existing branch with `git rebase --signoff main`. CI rejects pull requests with unsigned commits; run `scripts/check-dco.sh main..HEAD` to check locally.
+
 ## Licence
 
 See [ADR-0002](docs/adr/0002-licences.md) (legal review pending before the first public release):
