@@ -1,0 +1,22 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Apple
+.DS_Store
+xcuserdata/
+DerivedData/
+*.xcuserstate
+/apps/apple/build/
+
+# Web
+node_modules/
+/apps/web/dist/
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Claude Code local settings
+.claude/settings.local.json
