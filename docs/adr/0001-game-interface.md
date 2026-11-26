@@ -15,7 +15,7 @@ Every game, bot, renderer and transport depends on these interfaces ([architectu
 - Moves are composed through a choice protocol (component, zone, option, bounded number, subset).
 - Teams/partnerships are part of `Outcome` and view rules.
 
-Refinements from implementing `game-core` (see [design/game-core.md](../design/game-core.md)), proposed by Claude for the architect to confirm:
+Refinements from implementing `game-core` (see [design/game-core.md](../design/game-core.md)), proposed by Claude and confirmed by the architect on 2026-11-26:
 
 - **Events are an associated type** `Game::Event`, not one fixed core enum. What a game reports (trick won, wish declared) is game-specific; generic animation events in terms of table components are derived once the table model exists.
 - **Explicit chance steps** go through a separate `apply_chance(state, rng)` called while `pending` is `Chance`. Its default panics, so games without chance steps do not implement it. Chance inside a move still uses the `rng` passed to `apply`.
