@@ -20,10 +20,12 @@ Checks at every decision point (also before each chance step) and at the end:
 | Round trips | Config, state, every seat's and the spectator's view, legal moves, events, outcome and record survive JSON unchanged, and re-serializing gives identical text. |
 | Determinism | Replaying the record, before and after its JSON round trip, reaches the identical state and generator. |
 | Leak (scaffold) | A seat's view is identical in every declared hidden variant. |
+| Table | Every seat's and the spectator's table model passes `check_table`: unique zone and component IDs, no face shown in a hidden zone or in another seat's owner-only zone. |
+| Selection | `check_selection` for every seat: choice paths are unique and prefix-free, name only things on the seat's table, reach every legal move and each reached move applies. |
 
 A `Failure` names the check, explains it and carries the partial record as JSON, so the failing match replays in the CLI (issue 6).
 
-Not checked yet: the binary wire encoding (once ADR-0003 is accepted), opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, the selection protocol (issue 5), bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
+Not checked yet: the binary wire encoding (once ADR-0003 is accepted), opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
 
 Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 seats × 100 matches) and shows each check catching a deliberately broken game.
 
@@ -36,5 +38,6 @@ Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 
 - Exactly two different shapes: every seat with the winning shape wins the round. One shape or all three: draw. Draws count as rounds.
 - Score = rounds won; rank by score, ties share. A match takes exactly `seats × rounds` moves, no chance step.
 - A seat's view shows only its own sealed throw; spectators see who has thrown, not what. The omniscient view (`dev` feature) shows all.
+- Table: one owner-only player board per seat with its sealed throw (face down for others), a public tableau with the last round's throws, score and round indicators. A throw is one option choice (`rps-rock`, `rps-paper`, `rps-scissors`).
 
 Rule tests are in `crates/conformance/tests/rock_paper_scissors.rs`.

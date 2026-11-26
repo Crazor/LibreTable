@@ -4,8 +4,9 @@
 use libretable_conformance::rock_paper_scissors::{self, RockPaperScissors as Rps, Shape};
 use libretable_conformance::{Check, Failure, Suite, run};
 use libretable_game_core::{
-    Game, GameId, GameRng, IllegalMove, InvalidVariant, Observer, Outcome, Pending, Seat,
-    SeatCount, SeatResult, SeatSet, Seed, Variant,
+    Choice, Game, GameId, GameRng, IllegalMove, InvalidVariant, Layout, Observer, Outcome, Pending,
+    Seat, SeatCount, SeatResult, SeatSet, Seed, TableModel, Variant, Visibility, Zone, ZoneId,
+    ZoneKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -86,6 +87,10 @@ enum Bug {
     LossySerde,
     /// Outcome for one seat only.
     ShortOutcome,
+    /// Every move has the same (empty) choice path.
+    SameChoices,
+    /// The table has two zones with the same ID.
+    DuplicateZone,
 }
 
 impl Variant for Config {
@@ -192,6 +197,35 @@ impl Game for Counter {
         state.clone()
     }
 
+    fn table(view: &State) -> TableModel {
+        let zone = || Zone {
+            id: ZoneId(0),
+            kind: ZoneKind::Other,
+            label: "counter-zone".into(),
+            owner: None,
+            visibility: Visibility::Public,
+            layout: Layout::Row,
+            components: Vec::new(),
+        };
+        let zones = if Self::bug(view, Bug::DuplicateZone) {
+            vec![zone(), zone()]
+        } else {
+            vec![zone()]
+        };
+        TableModel {
+            zones,
+            indicators: Vec::new(),
+        }
+    }
+
+    fn choices(view: &State, mv: &u8) -> Vec<Choice> {
+        if Self::bug(view, Bug::SameChoices) {
+            Vec::new()
+        } else {
+            vec![Choice::Number(i64::from(*mv))]
+        }
+    }
+
     fn outcome(state: &State) -> Option<Outcome> {
         if Self::pending(state) != Pending::Finished {
             return None;
@@ -259,6 +293,8 @@ fn each_bug_is_caught_by_its_check() {
         (Bug::Nondeterministic, Check::Determinism),
         (Bug::LossySerde, Check::RoundTrip),
         (Bug::ShortOutcome, Check::Legality),
+        (Bug::SameChoices, Check::Selection),
+        (Bug::DuplicateZone, Check::Table),
     ] {
         assert_eq!(check(run(&counter_suite(Some(bug)))), expected, "{bug:?}");
     }

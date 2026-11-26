@@ -3,11 +3,12 @@
 
 use Shape::{Paper, Rock, Scissors};
 use libretable_conformance::rock_paper_scissors::{
-    Config, Event, RockPaperScissors as Rps, Round, Shape, State,
+    Config, Event, LAST_ROUND, RockPaperScissors as Rps, Round, Shape, State,
 };
 use libretable_game_core::{
-    Game, GameRecord, GameRng, IllegalMove, InvalidVariant, MAX_SEATS, Observer, Outcome, Pending,
-    RecordOf, ReplayError, Seat, SeatCount, SeatResult, SeatSet, Seed, Variant, replay,
+    Choice, ComponentId, Face, Game, GameRecord, GameRng, IllegalMove, InvalidVariant, MAX_SEATS,
+    Observer, Outcome, Pending, RecordOf, ReplayError, Seat, SeatCount, SeatResult, SeatSet, Seed,
+    Variant, ZoneId, check_selection, check_table, replay,
 };
 
 fn seat(index: u8) -> Seat {
@@ -398,4 +399,57 @@ fn state_view_and_events_round_trip() {
     }
     let json = serde_json::to_string(&events).unwrap();
     assert_eq!(serde_json::from_str::<Vec<Event>>(&json).unwrap(), events);
+}
+
+// --- Table model and selection ---
+
+#[test]
+fn the_selection_check_passes_throughout_a_match() {
+    let mut state = new_game(3, 2);
+    let throws = [Rock, Paper, Paper, Scissors, Scissors, Scissors];
+    for (index, shape) in (0..3).cycle().zip(throws) {
+        for s in 0..3 {
+            check_selection::<Rps>(&state, seat(s), &rng()).unwrap();
+        }
+        check_table(&Rps::table(&Rps::view(&state, Observer::Spectator)), None).unwrap();
+        Rps::apply(&mut state, seat(index), &shape, &mut rng()).unwrap();
+    }
+    assert_eq!(Rps::pending(&state), Pending::Finished);
+}
+
+#[test]
+fn a_throw_is_one_option_choice() {
+    let state = new_game(2, 1);
+    let view = Rps::view(&state, Observer::Seat(seat(0)));
+    assert_eq!(
+        Rps::choices(&view, &Scissors),
+        vec![Choice::Option("rps-scissors".into())]
+    );
+}
+
+#[test]
+fn the_table_shows_sealed_throws_only_to_their_seat() {
+    let mut state = new_game(2, 2);
+    Rps::apply(&mut state, seat(0), &Rock, &mut rng()).unwrap();
+    let face = |observer, owner: u8| {
+        let table = Rps::table(&Rps::view(&state, observer));
+        let zone = table.zone(ZoneId(u32::from(owner))).unwrap().clone();
+        zone.components.first().map(|c| c.face.clone())
+    };
+    assert!(
+        matches!(face(Observer::Seat(seat(0)), 0), Some(Face::Shown { key, .. }) if key == "rock")
+    );
+    assert_eq!(face(Observer::Seat(seat(1)), 0), Some(Face::Hidden));
+    assert_eq!(face(Observer::Spectator, 0), Some(Face::Hidden));
+    // Seat 1 has not thrown, so its board is empty.
+    assert_eq!(face(Observer::Seat(seat(0)), 1), None);
+
+    Rps::apply(&mut state, seat(1), &Paper, &mut rng()).unwrap();
+    let table = Rps::table(&Rps::view(&state, Observer::Spectator));
+    let last = table.zone(LAST_ROUND).unwrap();
+    assert_eq!(
+        last.components.iter().map(|c| c.id).collect::<Vec<_>>(),
+        [ComponentId(64), ComponentId(65)]
+    );
+    assert!(last.components.iter().all(|c| c.face != Face::Hidden));
 }

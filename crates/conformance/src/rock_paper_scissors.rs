@@ -3,7 +3,7 @@
 //!
 //! # Rules
 //!
-//! - **Seats:** 2 to [`MAX_SEATS`](libretable_game_core::MAX_SEATS).
+//! - **Seats:** 2 to [`MAX_SEATS`].
 //! - **Variant:** `rounds`, the number of rounds played, at least 1
 //!   (default 3).
 //! - **Round:** every seat secretly throws rock, paper or scissors. Rock beats
@@ -23,10 +23,19 @@
 //!
 //! A seat's view shows its own sealed throw of the current round; other seats
 //! and spectators only see who has thrown. Resolved rounds are public.
+//!
+//! # Table and choices
+//!
+//! Each seat has a player-board zone (owner only) holding its sealed throw as
+//! a token, face down for everybody else; a public tableau shows the throws of
+//! the last resolved round. Indicators show each seat's score and the round.
+//! A throw is one option choice: `rps-rock`, `rps-paper` or `rps-scissors`.
 
 use libretable_game_core::{
-    Game, GameId, GameRng, IllegalMove, InvalidVariant, Observer, Outcome, Pending, Seat,
-    SeatCount, SeatResult, SeatSet, Variant,
+    Attribute, Choice, Component, ComponentId, ComponentKind, Face, Game, GameId, GameRng,
+    IllegalMove, Indicator, IndicatorKind, IndicatorValue, InvalidVariant, Layout, MAX_SEATS,
+    Observer, Outcome, Pending, Seat, SeatCount, SeatResult, SeatSet, TableModel, Variant,
+    Visibility, Zone, ZoneId, ZoneKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -74,6 +83,26 @@ pub enum Shape {
 impl Shape {
     /// All shapes, in the order [`legal_moves`](Game::legal_moves) lists them.
     pub const ALL: [Self; 3] = [Self::Rock, Self::Paper, Self::Scissors];
+
+    /// Internal key, also the asset name: `"rock"`, `"paper"`, `"scissors"`.
+    #[must_use]
+    pub const fn key(self) -> &'static str {
+        match self {
+            Self::Rock => "rock",
+            Self::Paper => "paper",
+            Self::Scissors => "scissors",
+        }
+    }
+
+    /// Fluent message ID of the option choice that throws this shape.
+    #[must_use]
+    pub const fn option(self) -> &'static str {
+        match self {
+            Self::Rock => "rps-rock",
+            Self::Paper => "rps-paper",
+            Self::Scissors => "rps-scissors",
+        }
+    }
 
     /// Whether `self` beats `other`.
     #[must_use]
@@ -170,6 +199,21 @@ impl RockPaperScissors {
     }
 }
 
+/// Zone of the last resolved round; seat boards are zones `0..seats`.
+pub const LAST_ROUND: ZoneId = ZoneId(MAX_SEATS as u32);
+
+fn token(id: u32, shape: Option<Shape>) -> Component {
+    Component {
+        id: ComponentId(id),
+        kind: ComponentKind::Token,
+        face: shape.map_or(Face::Hidden, |shape| Face::Shown {
+            key: shape.key().into(),
+            attributes: vec![Attribute::new("shape", shape.key())],
+        }),
+        rotation: 0,
+    }
+}
+
 impl Game for RockPaperScissors {
     type Config = Config;
     type State = State;
@@ -246,6 +290,69 @@ impl Game for RockPaperScissors {
             waiting: Self::waiting(state),
             throws,
         }
+    }
+
+    /// Seat `n`'s sealed throw is component `n`; the last round's throw of
+    /// seat `n` is component `MAX_SEATS + n`.
+    fn table(view: &View) -> TableModel {
+        let boards = view
+            .throws
+            .iter()
+            .zip((0..).map_while(Seat::new))
+            .map(|(throw, owner)| {
+                let thrown = !view.waiting.contains(owner);
+                Zone {
+                    id: ZoneId(u32::from(owner.index())),
+                    kind: ZoneKind::PlayerBoard,
+                    label: "rps-zone-throw".into(),
+                    owner: Some(owner),
+                    visibility: Visibility::Owner,
+                    layout: Layout::Stack,
+                    components: if thrown {
+                        vec![token(u32::from(owner.index()), *throw)]
+                    } else {
+                        Vec::new()
+                    },
+                }
+            });
+        let last = view.history.last().map_or_else(Vec::new, |round| {
+            round
+                .throws
+                .iter()
+                .zip(u32::from(MAX_SEATS)..)
+                .map(|(shape, id)| token(id, Some(*shape)))
+                .collect()
+        });
+        let mut zones: Vec<Zone> = boards.collect();
+        zones.push(Zone {
+            id: LAST_ROUND,
+            kind: ZoneKind::Tableau,
+            label: "rps-zone-last-round".into(),
+            owner: None,
+            visibility: Visibility::Public,
+            layout: Layout::Row,
+            components: last,
+        });
+        let round = (view.history.len() + 1).min(usize::from(view.rounds));
+        let mut indicators = vec![Indicator {
+            kind: IndicatorKind::Counter,
+            label: "rps-indicator-round".into(),
+            owner: None,
+            value: IndicatorValue::Number(round as i64),
+        }];
+        indicators.extend(view.scores.iter().zip((0..).map_while(Seat::new)).map(
+            |(score, owner)| Indicator {
+                kind: IndicatorKind::Score,
+                label: "rps-indicator-score".into(),
+                owner: Some(owner),
+                value: IndicatorValue::Number(i64::from(*score)),
+            },
+        ));
+        TableModel { zones, indicators }
+    }
+
+    fn choices(_view: &View, mv: &Shape) -> Vec<Choice> {
+        vec![Choice::Option(mv.option().into())]
     }
 
     fn outcome(state: &State) -> Option<Outcome> {

@@ -17,15 +17,22 @@
 //! - **No leaks** (scaffold): a seat's view is unchanged across the states the
 //!   game declares to differ from the real one only in information hidden from
 //!   that seat.
+//! - **Table:** every seat's and the spectator's table model has unique zone
+//!   and component IDs and shows no face where its observer may
+//!   not look ([`check_table`]).
+//! - **Selection protocol:** for every seat, every legal move is reachable
+//!   through choices and no choice path leads to an illegal move
+//!   ([`check_selection`]).
 //!
 //! The binary wire encoding (ADR-0003), opaque-ID reissue on hidden shuffles,
-//! game-declared invariants, the selection protocol and cross-target
-//! determinism (native vs. Wasm) are not checked yet.
+//! game-declared invariants and cross-target determinism (native vs. Wasm) are
+//! not checked yet.
 
 use std::fmt;
 
 use libretable_game_core::{
-    Game, GameRecord, GameRng, Observer, Pending, RecordOf, Seat, SeatCount, Seed, Variant, replay,
+    Game, GameRecord, GameRng, Observer, Pending, RecordOf, Seat, SeatCount, Seed, Variant,
+    check_selection, check_table, replay,
 };
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -78,6 +85,10 @@ pub enum Check {
     Determinism,
     /// A view changed with information hidden from its observer.
     Leak,
+    /// A table model is malformed or shows what its observer may not see.
+    Table,
+    /// Choice paths do not select exactly the legal moves.
+    Selection,
 }
 
 /// A violated property, with the record that reproduces it: the record holds
@@ -295,16 +306,29 @@ impl<G: Game> Match<'_, G> {
         }
 
         self.check_state(state)?;
+        // After legality and the table, so those failures are reported as
+        // such rather than as a selection failure.
+        for seat in seats.seats() {
+            check_selection::<G>(state, seat, rng).map_err(|violation| {
+                self.fail(
+                    Check::Selection,
+                    format!("selection of {seat:?}: {violation:?}"),
+                )
+            })?;
+        }
         Ok(legal)
     }
 
-    /// Round trips and the leak test, for any reached state.
+    /// Round trips, table models and the leak test, for any reached state.
     fn check_state(&mut self, state: &G::State) -> Result<(), Failure> {
         self.round_trip("state", state)?;
-        self.round_trip("spectator view", &G::view(state, Observer::Spectator))?;
+        let spectator = G::view(state, Observer::Spectator);
+        self.round_trip("spectator view", &spectator)?;
+        self.check_table(&spectator, None)?;
         for seat in self.record.seats.seats() {
             let view = G::view(state, Observer::Seat(seat));
             self.round_trip("seat view", &view)?;
+            self.check_table(&view, Some(seat))?;
             if let Some(hidden_variants) = self.suite.hidden_variants {
                 for variant in hidden_variants(state, seat, &mut self.driver) {
                     self.report.leak_variants += 1;
@@ -322,6 +346,15 @@ impl<G: Game> Match<'_, G> {
             }
         }
         Ok(())
+    }
+
+    fn check_table(&self, view: &G::View, seat: Option<Seat>) -> Result<(), Failure> {
+        // `TableModel` is a game-core type whose serialization a game cannot
+        // change, so it is not round-tripped here (game-core tests it).
+        let table = G::table(view);
+        check_table(&table, seat).map_err(|violation| {
+            self.fail(Check::Table, format!("table of {seat:?}: {violation:?}"))
+        })
     }
 
     fn expect_accepted(

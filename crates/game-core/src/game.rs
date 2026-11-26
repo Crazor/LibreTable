@@ -5,7 +5,7 @@ use core::fmt;
 
 use serde::{Serialize, de::DeserializeOwned};
 
-use crate::{GameRng, Observer, Outcome, Pending, Seat, SeatCount};
+use crate::{Choice, GameRng, Observer, Outcome, Pending, Seat, SeatCount, TableModel};
 
 /// Stable identifier of a game, e.g. `"mau-mau"`.
 ///
@@ -159,6 +159,21 @@ pub trait Game {
 
     /// The view of `observer`: exactly what it may know, nothing more.
     fn view(state: &Self::State, observer: Observer) -> Self::View;
+
+    /// The generic table model of `view`, for renderers and accessibility.
+    /// It must not show more than `view` contains.
+    fn table(view: &Self::View) -> TableModel;
+
+    /// Describes `mv` as the ordered choices that select it (selection
+    /// protocol), against `view`, the view of the seat making the move.
+    /// Component and zone IDs must appear in [`table`](Self::table) of that
+    /// view.
+    ///
+    /// For one seat at one point, the paths of all legal moves must be
+    /// distinct and none may be a prefix of another, so the protocol knows
+    /// when a move is complete (checked by
+    /// [`check_selection`](crate::check_selection)).
+    fn choices(view: &Self::View, mv: &Self::Move) -> Vec<Choice>;
 
     /// The result once the game is finished; `None` before.
     fn outcome(state: &Self::State) -> Option<Outcome>;

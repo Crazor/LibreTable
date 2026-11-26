@@ -18,6 +18,8 @@ mod pending;
 mod record;
 mod rng;
 mod seat;
+mod selection;
+mod table;
 
 pub use game::{Game, GameId, IllegalMove, InvalidVariant, Variant};
 pub use outcome::{Outcome, SeatResult};
@@ -25,3 +27,11 @@ pub use pending::Pending;
 pub use record::{GameRecord, RECORD_SCHEMA_VERSION, RecordOf, RecordedMove, ReplayError, replay};
 pub use rng::{GameRng, Seed};
 pub use seat::{MAX_SEATS, Observer, Seat, SeatCount, SeatSet};
+pub use selection::{
+    Choice, ComponentSet, NotSelectable, Selection, SelectionError, SelectionViolation,
+    check_selection, check_table,
+};
+pub use table::{
+    Attribute, Component, ComponentId, ComponentKind, Face, Indicator, IndicatorKind,
+    IndicatorValue, Layout, TableModel, Visibility, Zone, ZoneId, ZoneKind,
+};
