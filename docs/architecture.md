@@ -70,6 +70,7 @@ pub trait Game {
 
     fn view(state: &Self::State, observer: Observer) -> Self::View;
     fn table(view: &Self::View) -> TableModel;           // generic rendering model
+    fn choices(view: &Self::View, mv: &Self::Move) -> Vec<Choice>; // selection path
 
     fn outcome(state: &Self::State) -> Option<Outcome>;  // scores, ranks, per-seat/per-team result
 }
@@ -107,7 +108,7 @@ User input is translated into moves by a generic, game-independent selection pro
 1. The core describes each legal move as an ordered list of **choices**: pick a component, pick a zone, pick an option, pick a number, pick a subset (e.g. "play Jack" → "wish Hearts"; "keep these dice").
 2. Given the choices made so far, the core returns the **next selectable** components, zones and options.
 3. The client highlights them and turns taps, clicks, drags or keyboard input into the next choice.
-4. When exactly one legal move remains, it is submitted (optionally after a confirm step); "undo choice" steps back. In trainer mode the confirm step shows the selected move's estimate and its gap to the best move before anything is sent.
+4. When the choices made form a legal move's complete path, it is submitted (optionally after a confirm step); "undo choice" steps back. In trainer mode the confirm step shows the selected move's estimate and its gap to the best move before anything is sent.
 
 The same protocol drives VoiceOver ("selectable: Queen of Hearts"), keyboard play and the text renderer, and lets bots and tests express moves in the same vocabulary as humans.
 

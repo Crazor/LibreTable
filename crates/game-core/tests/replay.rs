@@ -3,9 +3,10 @@
 //! shared total; whoever reaches the target wins.
 
 use libretable_game_core::{
-    Game, GameId, GameRecord, GameRng, IllegalMove, InvalidVariant, Observer, Outcome, Pending,
-    RECORD_SCHEMA_VERSION, RecordOf, ReplayError, Seat, SeatCount, SeatResult, SeatSet, Seed,
-    Variant, replay,
+    Choice, Game, GameId, GameRecord, GameRng, IllegalMove, Indicator, IndicatorKind,
+    IndicatorValue, InvalidVariant, Observer, Outcome, Pending, RECORD_SCHEMA_VERSION, RecordOf,
+    RecordedMove, ReplayError, Seat, SeatCount, SeatResult, SeatSet, Seed, TableModel, Variant,
+    check_selection, replay,
 };
 use serde::{Deserialize, Serialize};
 
@@ -118,6 +119,22 @@ impl Game for Count {
 
     fn view(state: &State, _observer: Observer) -> State {
         state.clone()
+    }
+
+    fn table(view: &State) -> TableModel {
+        TableModel {
+            zones: Vec::new(),
+            indicators: vec![Indicator {
+                kind: IndicatorKind::Counter,
+                label: "count-total".into(),
+                owner: None,
+                value: IndicatorValue::Number(i64::from(view.total)),
+            }],
+        }
+    }
+
+    fn choices(_view: &State, mv: &u8) -> Vec<Choice> {
+        vec![Choice::Number(i64::from(*mv))]
     }
 
     fn outcome(state: &State) -> Option<Outcome> {
@@ -300,4 +317,20 @@ fn replayed_rng_continues_the_stream() {
     let (_, mut a) = replay::<Count>(&record).unwrap();
     let (_, mut b) = replay::<Count>(&record).unwrap();
     assert_eq!(a.next_u64(), b.next_u64());
+}
+
+#[test]
+fn every_state_passes_the_selection_check() {
+    let record = play(5, 3);
+    let mut rng = GameRng::from_seed(record.seed);
+    let mut state = Count::setup(&record.variant, record.seats, &mut rng);
+    for RecordedMove { seat, mv } in &record.moves {
+        while Count::pending(&state) == Pending::Chance {
+            Count::apply_chance(&mut state, &mut rng);
+        }
+        for s in record.seats.seats() {
+            check_selection::<Count>(&state, s, &rng).unwrap();
+        }
+        Count::apply(&mut state, *seat, mv, &mut rng).unwrap();
+    }
 }
