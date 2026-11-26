@@ -226,3 +226,47 @@ pub enum Observer {
     #[cfg(feature = "dev")]
     Omniscient,
 }
+
+/// Visibility questions a game's [`view`](crate::Game::view) asks.
+///
+/// Games use these instead of matching on `Observer`: `Omniscient` exists only
+/// with the `dev` feature, and Cargo may enable that feature for a game crate
+/// that did not ask for it, so a game's own `#[cfg(feature = "dev")]` arm would
+/// not compile. Only this crate matches on the variant.
+impl Observer {
+    /// The observer's seat, if it is a seat.
+    #[must_use]
+    pub const fn seat(self) -> Option<Seat> {
+        match self {
+            Self::Seat(seat) => Some(seat),
+            Self::Spectator => None,
+            #[cfg(feature = "dev")]
+            Self::Omniscient => None,
+        }
+    }
+
+    /// Whether the observer may see information private to `owner`, such as
+    /// that seat's hand or sealed move: true for `owner` itself and for
+    /// `Omniscient`.
+    #[must_use]
+    pub const fn sees_private_of(self, owner: Seat) -> bool {
+        match self {
+            Self::Seat(seat) => seat.0 == owner.0,
+            Self::Spectator => false,
+            #[cfg(feature = "dev")]
+            Self::Omniscient => true,
+        }
+    }
+
+    /// Whether the observer may see everything, including information hidden
+    /// from every seat (the order of a face-down pile). True only for
+    /// `Omniscient`, so always false without the `dev` feature.
+    #[must_use]
+    pub const fn sees_all(self) -> bool {
+        match self {
+            Self::Seat(_) | Self::Spectator => false,
+            #[cfg(feature = "dev")]
+            Self::Omniscient => true,
+        }
+    }
+}
