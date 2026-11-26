@@ -11,7 +11,7 @@ Not yet here: `table(view) -> TableModel` and the selection protocol (milestone 
 | `Seat` | Seat index `0..64`, serialized as a number. |
 | `SeatCount` | Seats in a match, `1..=64`. |
 | `SeatSet` | Bit mask of seats; `Copy`, no allocation. |
-| `Observer` | `Seat(seat)`, `Spectator`, and `Omniscient` only with the `dev` feature. |
+| `Observer` | `Seat(seat)`, `Spectator`, and `Omniscient` only with the `dev` feature. Games ask `seat()`, `sees_private_of(owner)` and `sees_all()` instead of matching on it (ADR-0001). |
 | `Pending` | `All(SeatSet)`, `Any(SeatSet)`, `Chance`, `Finished`. |
 | `Outcome` | Per seat a `SeatResult { rank, score }` (rank 1 = best, ties share), plus `teams` as a partition of the seats (empty without partnerships). |
 | `GameId` | Lowercase kebab-case ID, checked at compile time when used in a `const`. |

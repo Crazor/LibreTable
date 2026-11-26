@@ -25,6 +25,10 @@ Refinements from implementing `game-core` (see [design/game-core.md](../design/g
 - **`Outcome`** v0: per seat `{ rank, score: i64 }`, rank 1 = best and ties share, plus `teams` as a partition of the seats.
 - `table(view)` is added together with the table model (milestone 1, issue 5).
 
+Refinement from the rock-paper-scissors test game, confirmed by the architect on 2026-11-26:
+
+- **Games never match on `Observer`.** `Omniscient` exists only with game-core's `dev` feature, and Cargo feature unification can enable it for a game crate that did not ask for it, so a `#[cfg(feature = "dev")]` arm inside a game would not compile, while a wildcard arm would fail open. `Observer` therefore offers `seat()`, `sees_private_of(owner)` and `sees_all()`; only game-core matches on the variants, so a new observer kind is a compile error there and not a silent leak in every game.
+
 ## Consequences
 
 - Validate with Mau-Mau, Rommé, Connect Four and the rock-paper-scissors test game before acceptance.
