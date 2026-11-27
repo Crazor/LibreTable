@@ -1,0 +1,34 @@
+[package]
+name = "libretable-server"
+description = "WebSocket server hosting matches; first the dev server for the web multiclient"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+# The server alone is AGPL-3.0-or-later (ADR-0002).
+license = "AGPL-3.0-or-later"
+publish.workspace = true
+
+[[bin]]
+name = "table-server"
+path = "src/main.rs"
+
+[features]
+# Local development only: serves the omniscient view, the full record (with
+# its seed) and game events. A build without it never sends any of them.
+dev = ["libretable-game-core/dev"]
+
+[dependencies]
+axum = { version = "0.8.4", default-features = false, features = ["http1", "tokio", "ws"] }
+libretable-bots = { path = "../bots" }
+libretable-game-core = { path = "../game-core" }
+libretable-l10n = { path = "../l10n" }
+libretable-registry = { path = "../registry" }
+libretable-session = { path = "../session" }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+tokio = { version = "1.45.0", features = ["macros", "net", "rt-multi-thread", "sync"] }
+
+[dev-dependencies]
+futures-util = { version = "0.3.31", default-features = false, features = ["sink", "std"] }
+tokio = { version = "1.45.0", features = ["io-util", "macros", "net", "rt-multi-thread", "time"] }
+tokio-tungstenite = { version = "0.29.0", default-features = false, features = ["connect"] }

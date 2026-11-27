@@ -124,6 +124,28 @@ impl Catalog {
     }
 }
 
+/// The locale of the process environment: the first set POSIX locale
+/// variable of `LC_ALL`, `LC_MESSAGES` and `LANG`, as a BCP 47 tag (see
+/// [`posix_to_bcp47`]). `None` if none is set.
+#[must_use]
+pub fn env_locale() -> Option<String> {
+    ["LC_ALL", "LC_MESSAGES", "LANG"]
+        .iter()
+        .filter_map(|name| std::env::var(name).ok())
+        .find(|value| !value.is_empty())
+        .map(|value| posix_to_bcp47(&value))
+}
+
+/// `de_DE.UTF-8@euro` → `de-DE`; `C` / `POSIX` → `en`.
+#[must_use]
+pub fn posix_to_bcp47(value: &str) -> String {
+    let base = value.split(['.', '@']).next().unwrap_or_default();
+    match base {
+        "" | "C" | "POSIX" => "en".to_owned(),
+        _ => base.replace('_', "-"),
+    }
+}
+
 /// A value for a message's `{ $variable }`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Arg<'a> {

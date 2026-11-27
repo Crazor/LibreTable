@@ -35,6 +35,9 @@ jobs:
       # The workspace build enables game-core's `dev` feature through
       # conformance's dev-dependency; check game-core without it as well.
       - run: cargo clippy -p libretable-game-core --all-targets --locked -- -D warnings
+      # The server's `dev` feature gates the omniscient view; check both.
+      - run: cargo clippy -p libretable-server --all-targets --locked -- -D warnings
+      - run: cargo clippy -p libretable-server --all-targets --locked --features dev -- -D warnings
 
   test:
     name: test
@@ -47,6 +50,9 @@ jobs:
       - run: cargo test --workspace --doc --locked
       # Without the `dev` feature (see the clippy job).
       - run: cargo test -p libretable-game-core --all-targets --locked
+      # The server with and without its `dev` feature (tests/dev_gate.rs).
+      - run: cargo test -p libretable-server --all-targets --locked
+      - run: cargo test -p libretable-server --all-targets --locked --features dev
 
   l10n:
     name: localization catalog
@@ -69,6 +75,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@1.85
       - uses: Swatinem/rust-cache@v2
       - run: cargo check --workspace --all-targets --locked
+      - run: cargo check -p libretable-server --all-targets --locked --features dev
 
   deny:
     name: cargo-deny

@@ -1,0 +1,173 @@
+/* SPDX-License-Identifier: MPL-2.0 */
+/* Dev multiclient. Plain CSS, light and dark. */
+
+:root {
+  --bg: #f7f7f5;
+  --panel: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6b6b70;
+  --border: #d9d9dc;
+  --accent: #2f62d8;
+  --accent-text: #ffffff;
+  --selectable: #e6eeff;
+  --current: #fff3c4;
+  --error: #b3261e;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #18181b;
+    --panel: #232327;
+    --text: #ececef;
+    --muted: #a0a0a8;
+    --border: #3a3a40;
+    --accent: #7aa2ff;
+    --accent-text: #111114;
+    --selectable: #2a3550;
+    --current: #4a4220;
+    --error: #ff8a80;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 16px 32px;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 { font-size: 20px; margin: 0; }
+h2 { font-size: 18px; margin: 16px 0 8px; }
+h3 { font-size: 15px; margin: 0 0 8px; }
+
+.status { color: var(--muted); }
+
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.badge.acting { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+
+#dev-badge { background: var(--current); color: var(--text); }
+
+.setup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 12px 0;
+}
+
+.setup form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+}
+
+label { display: inline-flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--muted); }
+label.wide { min-width: min(320px, 100%); }
+header label { flex-direction: row; align-items: center; gap: 6px; }
+
+input, select, textarea, button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+textarea { font-family: ui-monospace, monospace; font-size: 13px; width: 100%; }
+input[type="number"] { width: 6em; }
+
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: 0.5; }
+button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+button.selectable { background: var(--selectable); border-color: var(--accent); }
+button.link { border: none; background: none; padding: 0; text-align: left; color: inherit; }
+
+.error { color: var(--error); font-weight: 600; }
+.history { color: var(--muted); font-style: italic; }
+
+.log-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.log-controls input[type="range"] { flex: 1 1 160px; min-width: 120px; }
+
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.view {
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.view.observer { border-style: dashed; }
+
+.seat-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
+.seat-controls label { flex-direction: row; align-items: center; }
+
+.indicators { list-style: none; margin: 0 0 8px; padding: 0; color: var(--muted); font-size: 13px; }
+
+.zone { border-top: 1px solid var(--border); padding: 6px 0; }
+.zone-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.components { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.component {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.hidden-face { color: var(--muted); font-style: italic; }
+.empty { color: var(--muted); font-size: 13px; }
+
+.prompt { border-top: 2px solid var(--accent); margin-top: 8px; padding-top: 8px; }
+.prompt p { margin: 0 0 6px; }
+.choices, .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px; }
+
+.log ul, .outcome ul { padding-left: 20px; margin: 0; }
+.log li.current { background: var(--current); }
+
+.record pre {
+  max-height: 240px;
+  overflow: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+}

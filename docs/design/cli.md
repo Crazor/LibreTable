@@ -15,7 +15,7 @@ table help
 ```
 
 - `--lang <tag>` may be given anywhere and picks the locale; without it the CLI uses `LC_ALL`, `LC_MESSAGES` or `LANG` (`de_DE.UTF-8` → `de-DE`), else English. Unsupported locales fall back to English.
-- Games are picked by ID from the registry (`src/registry.rs`); adding a game is one line there. Currently only `rock-paper-scissors`.
+- Games are picked by ID from `libretable-registry` (shared with the server; `src/registry.rs` erases the game type for the commands); adding a game is one line there. Currently only `rock-paper-scissors`.
 - `--variant` is the game's config as JSON (e.g. `'{"rounds":1}'`); default is the standard ruleset.
 - Seats are numbered from 0, as in records.
 - **Seeds.** `--seed <n>` seeds a master `GameRng`; the match seed and one seed per bot derive from it (`session::derive_seed`), so a whole run repeats exactly. `play` without `--seed` takes one from the clock and prints it; `simulate` defaults to 0.

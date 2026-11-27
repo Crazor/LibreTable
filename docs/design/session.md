@@ -26,7 +26,7 @@ A session owns the authoritative state, the match's `GameRng` and the `GameRecor
 - **Events of chance steps** resolved in `new` are not reported (no game uses an initial chance step yet; revisit with Mau-Mau's deal).
 - `derive_seed(&mut GameRng) -> Seed` draws a fresh 256-bit seed, so one master seed can determine a match seed and one seed per bot.
 
-Not yet: seats as `Human(local) | Human(remote) | Bot(level)` and bot takeover, timeouts, transports, snapshots. They will be built around this API.
+Not yet: seats as `Human(local) | Human(remote) | Bot(level)` and bot takeover, timeouts, transports, snapshots. They will be built around this API. The dev server already keeps a driver (human or bot) and the human's draft per seat around a session, outside it ([server](server.md)).
 
 ## `Player` and `RandomBot`
 

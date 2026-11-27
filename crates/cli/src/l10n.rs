@@ -111,7 +111,7 @@ static LOCALIZER: OnceLock<Localizer> = OnceLock::new();
 /// in that order, else English. Has no effect after the first message was
 /// formatted.
 pub fn init(lang: Option<&str>) {
-    let tag = lang.map(str::to_owned).or_else(env_locale);
+    let tag = lang.map(str::to_owned).or_else(libretable_l10n::env_locale);
     let _ = LOCALIZER.set(Localizer::new(tag.as_deref().unwrap_or("en")));
 }
 
@@ -125,25 +125,7 @@ fn localizer() -> &'static Localizer {
     LOCALIZER.get_or_init(|| Localizer::new("en"))
 }
 
-/// The first set POSIX locale variable as a BCP 47 tag: `de_DE.UTF-8` →
-/// `de-DE`. `C` and `POSIX` mean English.
-fn env_locale() -> Option<String> {
-    ["LC_ALL", "LC_MESSAGES", "LANG"]
-        .iter()
-        .filter_map(|name| std::env::var(name).ok())
-        .find(|value| !value.is_empty())
-        .map(|value| posix_to_bcp47(&value))
-}
-
-/// `de_DE.UTF-8@euro` → `de-DE`; `C` / `POSIX` → `en`.
-#[must_use]
-pub fn posix_to_bcp47(value: &str) -> String {
-    let base = value.split(['.', '@']).next().unwrap_or_default();
-    match base {
-        "" | "C" | "POSIX" => "en".to_owned(),
-        _ => base.replace('_', "-"),
-    }
-}
+pub use libretable_l10n::posix_to_bcp47;
 
 /// A message argument owned by the caller of [`tr`]: numbers stay numbers,
 /// so Fluent can pick plural forms.

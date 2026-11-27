@@ -9,13 +9,15 @@ How user-facing text is named, where it lives and how CI keeps it complete. The 
   en/                    source locale; every other locale falls back to it
     cli.ftl
     rock-paper-scissors.ftl
+    server.ftl           server console, protocol errors and the dev page
   de/                    same file names, same keys
     cli.ftl
     rock-paper-scissors.ftl
+    server.ftl
 ```
 
 - One [Fluent](https://projectfluent.org/) file per crate or game, named after the game ID for a game (`mau-mau.ftl`) and after the crate name without the `libretable-` prefix for any other crate (`cli.ftl`, `game-core.ftl`). Every locale has the same files with the same keys.
-- The files are shared by Rust, Swift and web. Rust embeds them at compile time through `libretable-l10n` (below); other clients will read the same files.
+- The files are shared by Rust, Swift and web. Rust embeds them at compile time through `libretable-l10n` (below); other clients will read the same files. The web dev page gets its texts from the server instead: `welcome` carries every message formatted for the page's locale, with arguments left as `{$name}` for the page to fill in ([server](server.md#localization)).
 - Language-dependent game content (word lists) is game data, not a message.
 
 ## Message IDs
@@ -47,7 +49,7 @@ Each game declares every ID its code can emit in a `pub const MESSAGE_IDS: &[&st
 
 A declared list was preferred over scanning the source for string literals: scanning cannot tell message IDs from other strings and misses computed IDs, while the conformance suite sees exactly what a game emits.
 
-Client crates (the CLI, later server and bindings) declare their own IDs the same way and test them with `Localizer::missing` against the source localizer (`libretable_cli::l10n::MESSAGE_IDS`).
+Client crates (the CLI, the server, later the bindings) declare their own IDs the same way and test them with `Localizer::missing` against the source localizer (`libretable_cli::l10n::MESSAGE_IDS`, `libretable_server::MESSAGE_IDS`). The server's test also checks that the dev page uses no `server-…` ID outside its list.
 
 ## The `libretable-l10n` crate
 
@@ -69,6 +71,7 @@ l10n.format("no-such-id", &[]);               // "no-such-id"
 - Arguments are `Arg::Text` or `Arg::Number` (plural selection uses the locale's CLDR rules).
 - No Unicode bidi isolation marks are inserted around arguments; revisit when a right-to-left locale arrives.
 - `Localizer` is `Send + Sync`; build one per locale and share it.
+- `env_locale()` reads `LC_ALL`, `LC_MESSAGES` and `LANG` and converts the first set one with `posix_to_bcp47` (`de_DE.UTF-8` → `de-DE`), for command-line programs.
 - The catalog is embedded (`CATALOG`, `SOURCES`, `LOCALES` in `src/catalog.rs`); adding a file means adding one line per locale there. `Catalog` and `Source` also allow building a localizer from other sources, e.g. in tests.
 
 ## The CI check
