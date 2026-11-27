@@ -15,5 +15,6 @@ Status values: `proposed` (open, current proposal written down), `accepted`, `su
 | [0007](0007-game-center.md) | Game Center tier | proposed | Architect |
 | [0008](0008-project-name.md) | Project name and trademark | proposed | Architect |
 | [0009](0009-non-profit.md) | Non-profit association and accessibility partners | proposed | Architect |
+| [0010](0010-websocket-protocol.md) | WebSocket protocol v1 | proposed | Claude proposes |
 
 New ADRs copy [template.md](template.md).

@@ -182,7 +182,7 @@ A **session** runs one match: it owns the state, the RNG and the seats, and talk
 The server is a Rust service (e.g. axum on tokio) that links the same game crates as the clients and is the single source of truth for server matches.
 
 - **Responsibilities:** match lifecycle, shuffling and chance, per-seat views, bot seats, reconnection, spectators, client build check, arrival order for real-time games.
-- **Protocol:** WebSocket with a versioned, language-neutral schema (moves, views, events, presence). Any client in any language can play.
+- **Protocol:** WebSocket with a versioned, language-neutral schema (moves, views, events, presence). Any client in any language can play. Version 1 (JSON) is [ADR-0010](adr/0010-websocket-protocol.md).
 - **Starts small:** the dev server used by the web debug client in the core stage grows into this service. First public version = rooms joined by code, no accounts.
 - **Later:** accounts (Sign in with Apple, passkeys), friends, lobby, matchmaking, ratings, tournaments, server-side deep analysis.
 - **Cost discipline:** bots run on devices by default; server-side bots only for server matches.
@@ -245,14 +245,16 @@ English is the source language and German the first translation; full screen-rea
   bots/             ISMCTS and heuristics
   session/          seats, transports interface, match flow
   conformance/      generic suite (+ rock-paper-scissors test game)
-  server/           axum service (dev server first)
+  registry/         the games front ends pick by ID (CLI, server, bindings)
+  server/           axum service (dev server first), WebSocket protocol
   cli/              runner, simulator, text renderer
   l10n/             Fluent catalog loader and formatter, localization check
   ffi/              UniFFI bindings
   wasm/             wasm-bindgen package
 /apps
   apple/            SwiftUI app (macOS, iPadOS, iOS)
-  web/              dev multiclient, later web client
+  web/dev/          dev multiclient page, served by the dev server
+  web/              later the web client
 /docs               vision, architecture, design/, adr/, games/<game>/rules.md
 /locales            en (source), de, ...
 ```

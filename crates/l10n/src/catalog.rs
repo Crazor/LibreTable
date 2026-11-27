@@ -34,8 +34,10 @@ macro_rules! source {
 pub const SOURCES: &[Source] = &[
     source!("en", "cli"),
     source!("en", "rock-paper-scissors"),
+    source!("en", "server"),
     source!("de", "cli"),
     source!("de", "rock-paper-scissors"),
+    source!("de", "server"),
 ];
 
 /// The embedded catalog.

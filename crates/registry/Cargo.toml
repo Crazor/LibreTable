@@ -1,0 +1,13 @@
+[package]
+name = "libretable-registry"
+description = "The games front ends can pick by ID: CLI, server and later the bindings"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# Provides the rock-paper-scissors test game.
+libretable-conformance = { path = "../conformance" }
+libretable-game-core = { path = "../game-core" }

@@ -1,0 +1,83 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: MPL-2.0 -->
+<!-- Dev multiclient (docs/design/server.md). Served by the dev server;
+     every visible text comes from the server's Fluent messages. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-t="server-page-title"></title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1 data-t="server-page-title"></h1>
+    <span id="status" class="status" data-t="server-page-connecting"></span>
+    <span id="dev-badge" class="badge" data-t="server-page-dev-build" hidden></span>
+    <label><span data-t="server-page-language"></span>
+      <select id="locale"></select>
+    </label>
+  </header>
+
+  <section id="setup" class="setup">
+    <form id="create-form">
+      <label><span data-t="server-page-game"></span>
+        <select id="game"></select>
+      </label>
+      <label><span data-t="server-page-seats"></span>
+        <input id="seats" type="number" min="1" max="64" value="2">
+      </label>
+      <label><span data-t="server-page-seed"></span>
+        <input id="seed" type="text" inputmode="numeric" data-t-placeholder="server-page-seed-random">
+      </label>
+      <label class="wide"><span data-t="server-page-variant"></span>
+        <textarea id="variant" rows="2" spellcheck="false"></textarea>
+      </label>
+      <button type="submit" data-t="server-page-create"></button>
+    </form>
+    <form id="join-form">
+      <label><span data-t="server-page-match-id"></span>
+        <input id="match-id" type="number" min="1">
+      </label>
+      <button type="submit" data-t="server-page-join"></button>
+    </form>
+  </section>
+
+  <p id="error" class="error" role="alert" hidden></p>
+
+  <main id="match" hidden>
+    <h2 id="match-title"></h2>
+
+    <section class="log-controls" aria-labelledby="log-title">
+      <button id="first" type="button" data-t="server-page-first"></button>
+      <button id="previous" type="button" data-t="server-page-previous"></button>
+      <input id="scrub" type="range" min="0" value="0">
+      <button id="next" type="button" data-t="server-page-next"></button>
+      <button id="last" type="button" data-t="server-page-last"></button>
+      <button id="live" type="button" data-t="server-page-live"></button>
+      <span id="position"></span>
+    </section>
+    <p id="history" class="history" data-t="server-page-history" hidden></p>
+
+    <div id="views" class="views"></div>
+
+    <section id="outcome" class="outcome" hidden>
+      <h3 data-t="server-page-outcome"></h3>
+      <ul id="outcome-list"></ul>
+    </section>
+
+    <section class="log">
+      <h3 id="log-title" data-t="server-page-log"></h3>
+      <ul id="log-list"></ul>
+    </section>
+
+    <section id="record" class="record" hidden>
+      <h3 data-t="server-page-record"></h3>
+      <button id="download" type="button" data-t="server-page-download-record"></button>
+      <pre id="record-json"></pre>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

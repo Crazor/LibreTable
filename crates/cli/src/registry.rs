@@ -1,13 +1,13 @@
 //! Games the CLI knows, by ID.
 //!
-//! The commands are generic over [`Game`]; the registry erases the type so a
-//! game can be picked by its ID at run time. Adding a game is one line in
-//! [`games`].
+//! The commands are generic over [`Game`]; this module erases the type so a
+//! game can be picked by its ID at run time. The games themselves are listed
+//! in `libretable-registry`, shared with the server.
 
 use std::marker::PhantomData;
 
-use libretable_conformance::rock_paper_scissors::RockPaperScissors;
 use libretable_game_core::Game;
+use libretable_registry::{GAMES, RegisteredGame, Visitor};
 
 use crate::commands::{self, PlayOptions, ReplayOptions, SimulateOptions};
 use crate::{CliError, Io};
@@ -59,18 +59,27 @@ impl<G: Game> GameEntry for Entry<G> {
     }
 }
 
-fn entry<G: Game + 'static>() -> Box<dyn GameEntry> {
-    Box::new(Entry::<G>(PhantomData))
+struct MakeEntry;
+
+impl Visitor for MakeEntry {
+    type Output = Box<dyn GameEntry>;
+
+    fn visit<G: RegisteredGame>(self) -> Box<dyn GameEntry> {
+        Box::new(Entry::<G>(PhantomData))
+    }
 }
 
 /// Every registered game, sorted by ID.
 #[must_use]
 pub fn games() -> Vec<Box<dyn GameEntry>> {
-    vec![entry::<RockPaperScissors>()]
+    GAMES
+        .iter()
+        .filter_map(|entry| libretable_registry::visit(entry.id, MakeEntry))
+        .collect()
 }
 
 /// The game with `id`.
 #[must_use]
 pub fn find(id: &str) -> Option<Box<dyn GameEntry>> {
-    games().into_iter().find(|game| game.id() == id)
+    libretable_registry::visit(id, MakeEntry)
 }

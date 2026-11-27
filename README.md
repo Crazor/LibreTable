@@ -19,6 +19,14 @@ cargo run -p libretable-cli -- --lang de games
 
 See [docs/design/cli.md](docs/design/cli.md) for all options.
 
+The dev server hosts matches for the web dev multiclient: several seat views side by side, the omniscient view, bots and move-log stepping in the browser.
+
+```sh
+cargo run -p libretable-server --features dev    # then open http://127.0.0.1:8080/
+```
+
+See [docs/design/server.md](docs/design/server.md); without `--features dev` the omniscient view, records and events are never served.
+
 ## Documentation
 
 | Document | Contents |

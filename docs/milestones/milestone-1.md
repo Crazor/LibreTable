@@ -13,7 +13,7 @@ Goal: one card game (Mau-Mau) runs end to end through every core layer — rules
 | 7 | Mau-Mau rules spec | `docs/games/mau-mau/rules.md`: standard rules plus typed house-rule options; signed off by the architect |
 | 8 | Mau-Mau implementation | Crate `games/mau-mau`; passes conformance incl. leak test and opaque-ID reissue on reshuffle; rule tests from the spec; three golden replays |
 | 9 | ISMCTS bot | Generic over `Game`; samples determinizations from the bot's view only; beats random play in Mau-Mau with statistical significance; playout benchmark |
-| 10 | Dev server and web multiclient | Local WebSocket dev server running sessions; browser page with several seat views side by side, omniscient view (dev feature only), move log stepping; seats driven by hand or bot |
+| 10 | Dev server and web multiclient ([#7](https://github.com/Crazor/LibreTable/issues/7)) | Local WebSocket dev server running sessions; browser page with several seat views side by side, omniscient view (dev feature only), move log stepping; seats driven by hand or bot. Protocol: [ADR-0010](../adr/0010-websocket-protocol.md); runs rock-paper-scissors until Mau-Mau exists |
 | 11 | Localization scaffold ([#12](https://github.com/Crazor/LibreTable/issues/12)) | `/locales/en` and `/locales/de` Fluent files, one per crate or game; loader crate `l10n` outside the deterministic crates; CI fails on keys missing in `de` or IDs without an `en` message; lands before or with 6, which shows the first user-facing text |
 
 After milestone 1: Rommé (needs the architect's house rules), Connect Four, then the web stage.
