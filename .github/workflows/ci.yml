@@ -48,6 +48,19 @@ jobs:
       # Without the `dev` feature (see the clippy job).
       - run: cargo test -p libretable-game-core --all-targets --locked
 
+  l10n:
+    name: localization catalog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      # Fails on a key in `en` missing from `de` (or the reverse), a file in
+      # /locales that is not embedded, and a message ID declared by code
+      # without an `en` message (docs/design/localization.md). Also part of
+      # the workspace tests; run separately so the failure is easy to spot.
+      - run: cargo test -p libretable-l10n --all-targets --locked
+
   msrv:
     name: minimum Rust version
     runs-on: ubuntu-latest
