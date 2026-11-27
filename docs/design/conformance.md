@@ -25,7 +25,7 @@ Checks at every decision point (also before each chance step) and at the end:
 | Selection | `check_selection` for every seat: choice paths are unique and prefix-free, name only things on the seat's table, reach every legal move and each reached move applies. |
 | Messages | Before any match: `message_ids` is well-formed (kebab-case), duplicate-free and holds the game ID. During matches: every zone and indicator label, message indicator value, option choice of a legal move and reason of a rejected move is in `message_ids`. |
 
-A `Failure` names the check, explains it and carries the partial record as JSON (empty for a malformed `message_ids`, found before any match), so the failing match replays in the CLI (issue 6).
+A `Failure` names the check, explains it and carries the partial record as JSON (empty for a malformed `message_ids`, found before any match), so the failing match replays in the CLI (`table replay`, see [cli](cli.md)).
 
 Not checked yet: the binary wire encoding (once ADR-0003 is accepted), opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
 

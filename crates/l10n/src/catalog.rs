@@ -32,7 +32,9 @@ macro_rules! source {
 
 /// Every message file of every locale.
 pub const SOURCES: &[Source] = &[
+    source!("en", "cli"),
     source!("en", "rock-paper-scissors"),
+    source!("de", "cli"),
     source!("de", "rock-paper-scissors"),
 ];
 

@@ -1,0 +1,16 @@
+[package]
+name = "libretable-session"
+description = "Match flow for one match: state, generator, seats, record and selection protocol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libretable-bots = { path = "../bots" }
+libretable-game-core = { path = "../game-core" }
+
+[dev-dependencies]
+libretable-conformance = { path = "../conformance" }
+serde_json = { version = "1.0.140", default-features = false, features = ["alloc"] }

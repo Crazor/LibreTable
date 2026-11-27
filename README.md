@@ -6,7 +6,18 @@ An open-source platform for turn-based card, dice and board games: implement a g
 
 ## Status
 
-Pre-alpha. Nothing is playable yet; see [Milestone 1](docs/milestones/milestone-1.md).
+Pre-alpha; see [Milestone 1](docs/milestones/milestone-1.md). The command-line runner plays the rock-paper-scissors test game:
+
+```sh
+cargo run -p libretable-cli -- games
+cargo run -p libretable-cli -- play rock-paper-scissors --seats human,bot
+cargo run -p libretable-cli -- play rock-paper-scissors --seats bot,bot --seed 7 --record match.json
+cargo run -p libretable-cli -- replay match.json --seat 0
+cargo run -p libretable-cli -- simulate rock-paper-scissors -n 1000 --seats 3
+cargo run -p libretable-cli -- --lang de games
+```
+
+See [docs/design/cli.md](docs/design/cli.md) for all options.
 
 ## Documentation
 

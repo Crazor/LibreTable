@@ -1,0 +1,21 @@
+[package]
+name = "libretable-cli"
+description = "Command-line runner: play, replay and simulate matches; text renderer"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "table"
+path = "src/main.rs"
+
+[dependencies]
+libretable-bots = { path = "../bots" }
+# Provides the rock-paper-scissors test game for the registry.
+libretable-conformance = { path = "../conformance" }
+libretable-game-core = { path = "../game-core" }
+libretable-l10n = { path = "../l10n" }
+libretable-session = { path = "../session" }
+serde_json = { version = "1.0.140", default-features = false, features = ["std"] }
