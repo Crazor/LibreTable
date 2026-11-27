@@ -1,0 +1,17 @@
+[package]
+name = "libretable-l10n"
+description = "Loads the Fluent message catalogs in /locales and formats message IDs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+fluent-bundle = "0.16.0"
+fluent-syntax = "0.12.0"
+unic-langid = "0.9.6"
+
+[dev-dependencies]
+libretable-conformance = { path = "../conformance" }
+libretable-game-core = { path = "../game-core" }

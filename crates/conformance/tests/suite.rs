@@ -265,6 +265,12 @@ fn counter_suite(bug: Option<Bug>) -> Suite<Counter> {
         step_bound: |config, _| usize::from(config.target),
         candidate_moves: |_| vec![0, 1, 2, 3],
         hidden_variants: None,
+        message_ids: &[
+            "counter",
+            "counter-two-seats",
+            "counter-illegal",
+            "counter-zone",
+        ],
     }
 }
 
@@ -297,5 +303,51 @@ fn each_bug_is_caught_by_its_check() {
         (Bug::DuplicateZone, Check::Table),
     ] {
         assert_eq!(check(run(&counter_suite(Some(bug)))), expected, "{bug:?}");
+    }
+}
+
+#[test]
+fn an_undeclared_zone_label_fails_messages() {
+    let mut suite = counter_suite(None);
+    suite.message_ids = &["counter", "counter-illegal"];
+    assert_eq!(check(run(&suite)), Check::Messages);
+}
+
+#[test]
+fn an_undeclared_rejection_reason_fails_messages() {
+    let mut suite = counter_suite(None);
+    suite.message_ids = &["counter", "counter-zone"];
+    assert_eq!(check(run(&suite)), Check::Messages);
+}
+
+#[test]
+fn an_undeclared_option_fails_messages() {
+    let mut suite = rock_paper_scissors::suite(1, Seed::from_u64(1));
+    suite.message_ids = &[
+        "rock-paper-scissors",
+        "rps-not-pending",
+        "rps-zone-throw",
+        "rps-zone-last-round",
+        "rps-indicator-round",
+        "rps-indicator-score",
+    ];
+    let failure = run(&suite).unwrap_err();
+    assert_eq!(failure.check, Check::Messages);
+    assert!(failure.message.contains("option choice"), "{failure}");
+}
+
+#[test]
+fn a_malformed_message_list_fails_before_any_match() {
+    for ids in [
+        &["counter-zone", "counter-illegal"][..],
+        &["counter", "Counter-Zone"][..],
+        &["counter", "counter--zone"][..],
+        &["counter", "counter", "counter-zone"][..],
+    ] {
+        let mut suite = counter_suite(None);
+        suite.message_ids = ids;
+        let failure = run(&suite).unwrap_err();
+        assert_eq!(failure.check, Check::Messages, "{ids:?}");
+        assert!(failure.record.is_empty(), "{ids:?}");
     }
 }

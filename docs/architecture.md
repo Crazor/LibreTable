@@ -230,7 +230,7 @@ A game is done when it passes the generic conformance suite plus its own rule te
 
 English is the source language and German the first translation; full screen-reader play is a core feature, not an afterthought.
 
-- Fluent (`.ftl`) message files in `/locales`, shared by Rust, Swift and web; plural and gender rules handled by the format. CI fails on missing keys in `en` and `de`.
+- Fluent (`.ftl`) message files in `/locales`, one per crate or game, shared by Rust, Swift and web; plural and gender rules handled by the format. Rust clients format IDs with the `l10n` crate, which the deterministic crates never depend on. CI fails on keys missing in `en` or `de` and on message IDs declared by code without an `en` message ([design/localization.md](design/localization.md)).
 - Game names, card names, rules texts and bot explanations are localized; internal IDs (`mau-mau`, `queen-of-hearts`) never are. Regional terminology per locale where games demand it (German suit names for German-suited decks). Language-dependent game content (e.g. word lists) is game data, not UI text.
 - The semantic table model and the selection protocol generate VoiceOver labels, hints and rotor actions automatically ("Queen of Hearts, in your hand, playable"); events are announced ("Anna plays Ace of Spades; trick to Anna").
 - Every game is fully playable by keyboard and by screen reader. Dynamic Type, high-contrast and colour-blind-safe decks, reduced motion, haptics for turn changes.
@@ -247,6 +247,7 @@ English is the source language and German the first translation; full screen-rea
   conformance/      generic suite (+ rock-paper-scissors test game)
   server/           axum service (dev server first)
   cli/              runner, simulator, text renderer
+  l10n/             Fluent catalog loader and formatter, localization check
   ffi/              UniFFI bindings
   wasm/             wasm-bindgen package
 /apps
