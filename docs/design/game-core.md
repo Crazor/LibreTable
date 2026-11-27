@@ -12,7 +12,7 @@ The `libretable-game-core` crate holds the `Game` trait and the types every othe
 | `Observer` | `Seat(seat)`, `Spectator`, and `Omniscient` only with the `dev` feature. Games ask `seat()`, `sees_private_of(owner)` and `sees_all()` instead of matching on it (ADR-0001). |
 | `Pending` | `All(SeatSet)`, `Any(SeatSet)`, `Chance`, `Finished`. |
 | `Outcome` | Per seat a `SeatResult { rank, score }` (rank 1 = best, ties share), plus `teams` as a partition of the seats (empty without partnerships). |
-| `GameId` | Lowercase kebab-case ID, checked at compile time when used in a `const`. |
+| `GameId` | Lowercase kebab-case ID, checked at compile time when used in a `const`. Never translated; the game's display name is the Fluent message with the same ID ([localization.md](localization.md)). |
 | `Variant` | Trait for a game's config; `Default` is the standard ruleset, `validate(seats)` rejects invalid combinations. |
 | `IllegalMove`, `InvalidVariant` | Errors carrying a Fluent message ID. |
 | `Seed`, `GameRng` | 256-bit seed and the generator (below). |

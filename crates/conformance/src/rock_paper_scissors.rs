@@ -199,6 +199,22 @@ impl RockPaperScissors {
     }
 }
 
+/// Every Fluent message ID this game emits, its game ID first (the ID of its
+/// display name). Messages: `locales/<locale>/rock-paper-scissors.ftl`.
+pub const MESSAGE_IDS: &[&str] = &[
+    "rock-paper-scissors",
+    "rps-too-few-seats",
+    "rps-no-rounds",
+    "rps-not-pending",
+    "rps-rock",
+    "rps-paper",
+    "rps-scissors",
+    "rps-zone-throw",
+    "rps-zone-last-round",
+    "rps-indicator-round",
+    "rps-indicator-score",
+];
+
 /// Zone of the last resolved round; seat boards are zones `0..seats`.
 pub const LAST_ROUND: ZoneId = ZoneId(MAX_SEATS as u32);
 
@@ -394,6 +410,7 @@ pub fn suite(matches: usize, seed: libretable_game_core::Seed) -> crate::Suite<R
         step_bound: |config, seats| usize::from(seats.get()) * usize::from(config.rounds),
         candidate_moves: |_| Shape::ALL.to_vec(),
         hidden_variants: Some(hidden_variants),
+        message_ids: MESSAGE_IDS,
     }
 }
 

@@ -10,6 +10,7 @@ The `libretable-conformance` crate holds the generic conformance suite described
 - `step_bound(config, seats)`: the most moves plus chance resolutions a match may take.
 - `candidate_moves(state)`: moves to try besides the legal ones, so that rejection is tested. Ideally every well-formed move that could be legal somewhere in the game.
 - `hidden_variants(state, seat, rng)`: for the leak test, a few states that differ from `state` only in what is hidden from `seat`; `None` for games without hidden information.
+- `message_ids`: every Fluent message ID the game can emit, its game ID included (the game's `MESSAGE_IDS`, see [localization.md](localization.md)).
 
 Checks at every decision point (also before each chance step) and at the end:
 
@@ -22,8 +23,9 @@ Checks at every decision point (also before each chance step) and at the end:
 | Leak (scaffold) | A seat's view is identical in every declared hidden variant. |
 | Table | Every seat's and the spectator's table model passes `check_table`: unique zone and component IDs, no face shown in a hidden zone or in another seat's owner-only zone. |
 | Selection | `check_selection` for every seat: choice paths are unique and prefix-free, name only things on the seat's table, reach every legal move and each reached move applies. |
+| Messages | Before any match: `message_ids` is well-formed (kebab-case), duplicate-free and holds the game ID. During matches: every zone and indicator label, message indicator value, option choice of a legal move and reason of a rejected move is in `message_ids`. |
 
-A `Failure` names the check, explains it and carries the partial record as JSON, so the failing match replays in the CLI (issue 6).
+A `Failure` names the check, explains it and carries the partial record as JSON (empty for a malformed `message_ids`, found before any match), so the failing match replays in the CLI (issue 6).
 
 Not checked yet: the binary wire encoding (once ADR-0003 is accepted), opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
 
@@ -39,5 +41,7 @@ Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 
 - Score = rounds won; rank by score, ties share. A match takes exactly `seats × rounds` moves, no chance step.
 - A seat's view shows only its own sealed throw; spectators see who has thrown, not what. The omniscient view (`dev` feature) shows all.
 - Table: one owner-only player board per seat with its sealed throw (face down for others), a public tableau with the last round's throws, score and round indicators. A throw is one option choice (`rps-rock`, `rps-paper`, `rps-scissors`).
+
+- Messages: `MESSAGE_IDS` lists every ID the game emits (prefix `rps-`, display name `rock-paper-scissors`); the texts are in `locales/*/rock-paper-scissors.ftl`.
 
 Rule tests are in `crates/conformance/tests/rock_paper_scissors.rs`.

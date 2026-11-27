@@ -23,6 +23,10 @@
 //! - **Selection protocol:** for every seat, every legal move is reachable
 //!   through choices and no choice path leads to an illegal move
 //!   ([`check_selection`]).
+//! - **Messages:** every Fluent message ID the game emits (its game ID, zone
+//!   and indicator labels, message indicator values, option choices and the
+//!   reasons of rejected moves) is declared in [`Suite::message_ids`], which
+//!   the localization check holds against the `en` catalog.
 //!
 //! The binary wire encoding (ADR-0003), opaque-ID reissue on hidden shuffles,
 //! game-declared invariants and cross-target determinism (native vs. Wasm) are
@@ -31,8 +35,8 @@
 use std::fmt;
 
 use libretable_game_core::{
-    Game, GameRecord, GameRng, Observer, Pending, RecordOf, Seat, SeatCount, Seed, Variant,
-    check_selection, check_table, replay,
+    Choice, Game, GameRecord, GameRng, IndicatorValue, Observer, Pending, RecordOf, Seat,
+    SeatCount, Seed, Variant, check_selection, check_table, replay,
 };
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -65,6 +69,13 @@ pub struct Suite<G: Game> {
     /// enough; every decision point of every match is checked. `None` skips
     /// the check, for games without hidden information.
     pub hidden_variants: Option<HiddenVariants<G>>,
+    /// Every Fluent message ID the game's code can emit, including its game
+    /// ID (the ID of its display name). The suite fails on an emitted ID
+    /// missing here; the localization check (`libretable-l10n`) fails on an
+    /// ID here without an `en` message. IDs the random matches cannot reach,
+    /// such as [`InvalidVariant`](libretable_game_core::InvalidVariant)
+    /// reasons, must be listed too.
+    pub message_ids: &'static [&'static str],
 }
 
 /// See [`Suite::hidden_variants`].
@@ -89,6 +100,9 @@ pub enum Check {
     Table,
     /// Choice paths do not select exactly the legal moves.
     Selection,
+    /// The game emits a message ID missing from [`Suite::message_ids`], or
+    /// that list is malformed.
+    Messages,
 }
 
 /// A violated property, with the record that reproduces it: the record holds
@@ -137,6 +151,7 @@ pub struct Report {
 ///
 /// The first [`Failure`] found.
 pub fn run<G: Game>(suite: &Suite<G>) -> Result<Report, Failure> {
+    check_message_list::<G>(suite.message_ids)?;
     let mut seeds = GameRng::from_seed(suite.seed);
     let mut report = Report::default();
     for (config, seats) in &suite.setups {
@@ -156,6 +171,42 @@ pub fn run<G: Game>(suite: &Suite<G>) -> Result<Report, Failure> {
     Ok(report)
 }
 
+/// Whether `id` is a well-formed message ID: lowercase ASCII letters, digits
+/// and single inner hyphens, like a [`GameId`](libretable_game_core::GameId).
+fn is_message_id(id: &str) -> bool {
+    !id.is_empty()
+        && !id.starts_with('-')
+        && !id.ends_with('-')
+        && !id.contains("--")
+        && id
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+}
+
+/// The declared list is well-formed, duplicate-free and holds the game ID.
+fn check_message_list<G: Game>(ids: &[&str]) -> Result<(), Failure> {
+    let fail = |message: String| Failure {
+        check: Check::Messages,
+        message,
+        record: String::new(),
+    };
+    for (i, id) in ids.iter().enumerate() {
+        if !is_message_id(id) {
+            return Err(fail(format!("malformed message ID {id:?}")));
+        }
+        if ids[..i].contains(id) {
+            return Err(fail(format!("message ID {id:?} listed twice")));
+        }
+    }
+    if !ids.contains(&G::ID.as_str()) {
+        return Err(fail(format!(
+            "game ID {:?} (its display name) is not listed",
+            G::ID.as_str()
+        )));
+    }
+    Ok(())
+}
+
 /// One match in progress.
 struct Match<'a, G: Game> {
     suite: &'a Suite<G>,
@@ -172,6 +223,18 @@ impl<G: Game> Match<'_, G> {
             message: message.into(),
             record: serde_json::to_string(&self.record)
                 .unwrap_or_else(|error| format!("<record does not serialize: {error}>")),
+        }
+    }
+
+    /// `id`, emitted as `what`, is declared in [`Suite::message_ids`].
+    fn check_message(&self, what: &str, id: &str) -> Result<(), Failure> {
+        if self.suite.message_ids.contains(&id) {
+            Ok(())
+        } else {
+            Err(self.fail(
+                Check::Messages,
+                format!("{what} {id:?} is not in the declared message IDs"),
+            ))
         }
     }
 
@@ -316,7 +379,21 @@ impl<G: Game> Match<'_, G> {
                 )
             })?;
         }
+        self.check_options(state, &legal)?;
         Ok(legal)
+    }
+
+    /// Every option choice of every legal move is a declared message ID.
+    fn check_options(&self, state: &G::State, legal: &[(Seat, G::Move)]) -> Result<(), Failure> {
+        for (seat, mv) in legal {
+            let view = G::view(state, Observer::Seat(*seat));
+            for choice in G::choices(&view, mv) {
+                if let Choice::Option(id) = choice {
+                    self.check_message("option choice", &id)?;
+                }
+            }
+        }
+        Ok(())
     }
 
     /// Round trips, table models and the leak test, for any reached state.
@@ -354,7 +431,17 @@ impl<G: Game> Match<'_, G> {
         let table = G::table(view);
         check_table(&table, seat).map_err(|violation| {
             self.fail(Check::Table, format!("table of {seat:?}: {violation:?}"))
-        })
+        })?;
+        for zone in &table.zones {
+            self.check_message("zone label", &zone.label)?;
+        }
+        for indicator in &table.indicators {
+            self.check_message("indicator label", &indicator.label)?;
+            if let IndicatorValue::Message(id) = &indicator.value {
+                self.check_message("indicator value", id)?;
+            }
+        }
+        Ok(())
     }
 
     fn expect_accepted(
@@ -384,19 +471,19 @@ impl<G: Game> Match<'_, G> {
     ) -> Result<(), Failure> {
         let mut probe = state.clone();
         let mut probe_rng = rng.clone();
-        if G::apply(&mut probe, seat, mv, &mut probe_rng).is_ok() {
+        let Err(illegal) = G::apply(&mut probe, seat, mv, &mut probe_rng) else {
             return Err(self.fail(
                 Check::Legality,
                 format!("move {mv:?} of {seat:?} is not listed as legal but applies"),
             ));
-        }
+        };
         if probe != *state || probe_rng != *rng {
             return Err(self.fail(
                 Check::Legality,
                 format!("rejected move {mv:?} of {seat:?} changed the state or generator"),
             ));
         }
-        Ok(())
+        self.check_message("illegal-move reason", illegal.reason)
     }
 
     fn check_end(&mut self, state: &G::State, rng: &GameRng) -> Result<(), Failure> {
