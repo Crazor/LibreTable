@@ -7,9 +7,10 @@ How user-facing text is named, where it lives and how CI keeps it complete. The 
 ```text
 /locales
   en/                    source locale; every other locale falls back to it
+    cli.ftl
     rock-paper-scissors.ftl
-    cli.ftl              (with the CLI, issue 6)
   de/                    same file names, same keys
+    cli.ftl
     rock-paper-scissors.ftl
 ```
 
@@ -35,7 +36,7 @@ The deterministic crates (`game-core`, `games/*`, `bots`, `conformance`) return 
 - `Choice::Option`;
 - its `Game::ID` (display name).
 
-Face keys (`queen-of-hearts`) are not message IDs yet; how renderers name components is decided with the text renderer and Mau-Mau.
+Face keys (`queen-of-hearts`) are not message IDs yet; the text renderer shows them as they are, with their attributes ([cli](cli.md)). How renderers name components in words is decided with Mau-Mau.
 
 ### Discovering the IDs used in code
 
@@ -46,7 +47,7 @@ Each game declares every ID its code can emit in a `pub const MESSAGE_IDS: &[&st
 
 A declared list was preferred over scanning the source for string literals: scanning cannot tell message IDs from other strings and misses computed IDs, while the conformance suite sees exactly what a game emits.
 
-Client crates (the CLI, later server and bindings) declare their own IDs the same way and test them with `Localizer::missing` against the source localizer.
+Client crates (the CLI, later server and bindings) declare their own IDs the same way and test them with `Localizer::missing` against the source localizer (`libretable_cli::l10n::MESSAGE_IDS`).
 
 ## The `libretable-l10n` crate
 

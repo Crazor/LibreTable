@@ -1,0 +1,14 @@
+[package]
+name = "libretable-bots"
+description = "Players that act from views only: the Player interface and bots"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libretable-game-core = { path = "../game-core" }
+
+[dev-dependencies]
+libretable-conformance = { path = "../conformance" }
