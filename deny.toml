@@ -42,12 +42,14 @@ multiple-versions = "warn"
 wildcards = "deny"
 allow-wildcard-paths = true
 # Localization stays out of the deterministic crates (game-core, games/*,
-# bots, conformance): only `libretable-l10n` may depend on Fluent, and only
-# the client crates listed as its wrappers may depend on `libretable-l10n`
-# (docs/design/localization.md). Add `ffi` and `wasm` here when they are
+# bots, conformance): only `libretable-l10n` may depend on Fluent
+# (`fluent-bundle`, and `fluent-syntax` directly or through `fluent-bundle`),
+# and only the client crates listed as its wrappers may depend on
+# `libretable-l10n` (docs/design/localization.md). Add `ffi` and `wasm` here when they are
 # created.
 deny = [
     { crate = "fluent-bundle", wrappers = ["libretable-l10n"] },
+    { crate = "fluent-syntax", wrappers = ["libretable-l10n", "fluent-bundle"] },
     { crate = "libretable-l10n", wrappers = ["libretable-cli", "libretable-server"] },
 ]
 
