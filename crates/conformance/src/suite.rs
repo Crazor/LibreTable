@@ -384,12 +384,17 @@ impl<G: Game> Match<'_, G> {
     }
 
     /// Every option choice of every legal move is a declared message ID.
+    ///
+    /// `legal` lists each seat's moves contiguously (see
+    /// [`Self::check_decision_point`]), so each seat's view is built once.
     fn check_options(&self, state: &G::State, legal: &[(Seat, G::Move)]) -> Result<(), Failure> {
-        for (seat, mv) in legal {
-            let view = G::view(state, Observer::Seat(*seat));
-            for choice in G::choices(&view, mv) {
-                if let Choice::Option(id) = choice {
-                    self.check_message("option choice", &id)?;
+        for group in legal.chunk_by(|a, b| a.0 == b.0) {
+            let view = G::view(state, Observer::Seat(group[0].0));
+            for (_, mv) in group {
+                for choice in G::choices(&view, mv) {
+                    if let Choice::Option(id) = choice {
+                        self.check_message("option choice", &id)?;
+                    }
                 }
             }
         }
