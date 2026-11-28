@@ -1,5 +1,5 @@
 //! The game server, starting as the dev server for the web
-//! multiclient (docs/design/server.md, ADR-0005, ADR-0010).
+//! multiclient (docs/design/server.md).
 //!
 //! It hosts matches through `libretable-session`, plays bot seats with
 //! `libretable-bots` and talks to clients over a WebSocket at `/ws` with the
@@ -10,7 +10,7 @@
 //! omniscient view, the full game record with its seed, and game events. A
 //! build without it refuses `"omniscient"` and never sends any of them.
 //!
-//! Licensed AGPL-3.0-or-later (ADR-0002).
+//! Licensed AGPL-3.0-or-later (docs/policies.md).
 
 #![forbid(unsafe_code)]
 
@@ -28,7 +28,7 @@ pub use web::{router, serve};
 /// Whether this build has the `dev` feature.
 pub const DEV: bool = cfg!(feature = "dev");
 
-/// Build ID written into records and `welcome` (ADR-0004): the `BUILD_ID`
+/// Build ID written into records and `welcome`: the `BUILD_ID`
 /// environment variable at compile time (CI sets the git commit), else the
 /// crate version.
 pub const BUILD: &str = match option_env!("BUILD_ID") {

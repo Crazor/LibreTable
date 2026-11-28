@@ -9,12 +9,12 @@ use crate::{
     Game, GameId, GameRng, IllegalMove, InvalidVariant, Pending, Seat, SeatCount, Seed, Variant,
 };
 
-/// Schema version written into every [`GameRecord`] (ADR-0003). Bumped on any
+/// Schema version written into every [`GameRecord`]. Bumped on any
 /// incompatible change to the record layout or to the meaning of its fields.
 pub const RECORD_SCHEMA_VERSION: u16 = 1;
 
 /// A complete match: `(game ID, variant, seats, seed, move list)` plus the
-/// build that produced it (ADR-0004).
+/// build that produced it (architecture: saves, replays & updates).
 ///
 /// Chance steps are not recorded; they follow from the seed. Moves are stored
 /// in the order the authoritative session applied them, so simultaneous
@@ -113,7 +113,7 @@ pub enum ReplayError {
 /// # Errors
 ///
 /// [`ReplayError`] if the record does not belong to `G` or a move does not
-/// apply. Such a record is outdated (ADR-0004) or corrupt.
+/// apply. Such a record is outdated or corrupt.
 pub fn replay<G: Game>(record: &RecordOf<G>) -> Result<(G::State, GameRng), ReplayError> {
     if record.schema != RECORD_SCHEMA_VERSION {
         return Err(ReplayError::Schema {

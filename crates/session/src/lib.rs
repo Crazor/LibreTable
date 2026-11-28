@@ -110,7 +110,7 @@ impl fmt::Display for SubmitError {
 impl<G: Game> Session<G> {
     /// Starts a match: validates the variant, sets up from `seed` and
     /// resolves any initial chance step. `build` identifies the binary that
-    /// runs the match and goes into the record (ADR-0004).
+    /// runs the match and goes into the record.
     ///
     /// Events of chance steps resolved here are not reported.
     ///

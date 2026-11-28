@@ -1,4 +1,4 @@
-# cargo-deny configuration. Licence policy follows docs/adr/0002-licences.md:
+# cargo-deny configuration. Licence policy follows docs/policies.md:
 # dependencies must be compatible with distributing our crates under MPL-2.0
 # (including through the App Store), so GPL-family licences are not allowed.
 
@@ -15,7 +15,7 @@ confidence-threshold = 0.93
 # The allow list is policy, not an inventory of current dependencies.
 unused-allowed-license = "allow"
 # Permissive and weak-copyleft licences compatible with MPL-2.0 and AGPL-3.0.
-# Add a licence here only after checking it against ADR-0002.
+# Add a licence here only after checking it against docs/policies.md.
 allow = [
     "MIT",
     "MIT-0",
@@ -29,7 +29,7 @@ allow = [
     "CC0-1.0",
     "MPL-2.0",
 ]
-# The `server` crate is AGPL-3.0-or-later (ADR-0002); that licence is allowed
+# The `server` crate is AGPL-3.0-or-later (docs/policies.md); that licence is allowed
 # for it alone.
 exceptions = [{ crate = "libretable-server", allow = ["AGPL-3.0-or-later"] }]
 

@@ -1,6 +1,6 @@
 # game-core
 
-The `libretable-game-core` crate holds the `Game` trait and the types every other crate shares. It is `no_std` + `alloc`, `#![forbid(unsafe_code)]`, and depends only on `serde`. Interface decisions are in [ADR-0001](../adr/0001-game-interface.md); this document describes what is implemented.
+The `libretable-game-core` crate holds the `Game` trait and the types every other crate shares. It is `no_std` + `alloc`, `#![forbid(unsafe_code)]`, and depends only on `serde`. This document describes what is implemented, the decisions behind it and the open points.
 
 ## Types
 
@@ -9,7 +9,7 @@ The `libretable-game-core` crate holds the `Game` trait and the types every othe
 | `Seat` | Seat index `0..64`, serialized as a number. |
 | `SeatCount` | Seats in a match, `1..=64`. |
 | `SeatSet` | Bit mask of seats; `Copy`, no allocation. |
-| `Observer` | `Seat(seat)`, `Spectator`, and `Omniscient` only with the `dev` feature. Games ask `seat()`, `sees_private_of(owner)` and `sees_all()` instead of matching on it (ADR-0001). |
+| `Observer` | `Seat(seat)`, `Spectator`, and `Omniscient` only with the `dev` feature. Games ask `seat()`, `sees_private_of(owner)` and `sees_all()` instead of matching on it (see [decisions](#decisions)). |
 | `Pending` | `All(SeatSet)`, `Any(SeatSet)`, `Chance`, `Finished`. |
 | `Outcome` | Per seat a `SeatResult { rank, score }` (rank 1 = best, ties share), plus `teams` as a partition of the seats (empty without partnerships). |
 | `GameId` | Lowercase kebab-case ID, checked at compile time when used in a `const`. Never translated; the game's display name is the Fluent message with the same ID ([localization.md](localization.md)). |
@@ -54,12 +54,40 @@ For one seat at one point the paths must be unique and prefix-free; then a path 
 
 ## `GameRng` (`chacha12-v1`)
 
-ChaCha with 12 rounds, keyed by the seed. The block function is checked against the RFC 8439 test vector (20 rounds), and the 12-round output is pinned against the published all-zero-key keystream. The exact output order, the unbiased `below(bound)` (Lemire) and the Fisher–Yates `shuffle` are documented in `rng.rs`. Any change to them changes every replay and needs an ADR. ChaCha rather than a small PRNG keeps future draws unpredictable to players who see dealt cards.
+ChaCha with 12 rounds, keyed by the seed. The block function is checked against the RFC 8439 test vector (20 rounds), and the 12-round output is pinned against the published all-zero-key keystream. The exact output order, the unbiased `below(bound)` (Lemire) and the Fisher–Yates `shuffle` are documented in `rng.rs`. Any change to them changes every replay and needs a deliberate decision with a new algorithm name. ChaCha rather than a small PRNG keeps future draws unpredictable to players who see dealt cards.
 
 `GameRng` serializes key, block counter and position, so snapshots resume mid-stream. `Debug` hides the key.
 
 ## Records and replay
 
-`GameRecord { schema, game, build, variant, seats, seed, moves }` with `moves: Vec<{ seat, move }>` in applied order. Chance steps are not recorded; they follow from the seed. `schema` is `RECORD_SCHEMA_VERSION` (ADR-0003). `Seed` is 64 hex digits in JSON and 32 bytes in binary formats.
+`GameRecord { schema, game, build, variant, seats, seed, moves }` with `moves: Vec<{ seat, move }>` in applied order. Chance steps are not recorded; they follow from the seed. `schema` is `RECORD_SCHEMA_VERSION`. `Seed` is 64 hex digits in JSON and 32 bytes in binary formats.
 
 `replay::<G>(&record)` is the reference match loop: it validates the variant, sets up from the seed, resolves every `Chance` (also after the last move), checks each move's seat is pending and applies it. It returns the state and the generator, ready to continue.
+
+## Encoding
+
+JSON for now: records, fixtures, golden replays, the CLI and the dev server protocol. Planned: a compact binary encoding (e.g. `postcard`) for the wire and storage, with a schema version in every message and record header; the conformance suite's round trips then cover both. Open: whether non-Rust clients (Swift via UniFFI, web via Wasm) need the binary format or use generated types.
+
+## Decisions
+
+Confirmed by the architect while implementing milestone 1:
+
+- **Events are an associated type** `Game::Event`, not one fixed core enum; what a game reports is game-specific. Generic animation events in terms of table components are derived from the table model later.
+- **Explicit chance steps** go through `apply_chance` while `pending` is `Chance`; chance inside a move uses the `rng` passed to `apply`.
+- **`All(seats)` is applied one move at a time**; the game keeps sealed moves in its state, so a record is always a flat list of `(seat, move)` in arrival order.
+- **`SeatSet` is a 64-bit mask**, capping a match at 64 seats and keeping `pending` allocation-free in bot playouts.
+- **`GameRng` is ChaCha12**, implemented without new dependencies, so players cannot predict future draws from the cards they see.
+- **`table(view)`** builds the table model from a view, never from the state, so it cannot leak.
+- **Choice paths are unique and prefix-free** per seat and point. "Play Jack" and "play Jack, wish Hearts" can therefore not both be legal at once; a game adds an explicit option (e.g. "no wish") instead. A subset is one choice carrying a canonical set.
+- **Games never match on `Observer`.** `Omniscient` exists only with the `dev` feature, and Cargo feature unification can enable it for a game crate that did not ask for it, so a `#[cfg(feature = "dev")]` arm inside a game would not compile, while a wildcard arm would fail open. Games use `seat()`, `sees_private_of(owner)` and `sees_all()`; only game-core matches on the variants.
+- Interfaces are validated against Mau-Mau, Rommé, Connect Four and rock-paper-scissors, and requirements from the [reference games](../reference-games.md) must stay expressible without breaking changes.
+
+## Open points
+
+- Submitting a **draft** (e.g. a rearranged table in tile rummy) that the core validates, besides composing a move from choices.
+- Lazy enumeration and numeric ranges for very large move spaces, and how bots sample there; the v0 selection checker walks every path and clones per node, which may need an index-based walk for Rommé-sized move lists.
+- Where per-game history (repetition) lives and how it is hashed.
+- Typed board graphs (locations, adjacency, per-player paths), layout hints and custom-widget slots in the table model.
+- Turns made of several groups (Rommé's first lay-down of several melds): staged moves with a closing option, or draft submission.
+- Optional announcements ("Mau") under prefix-free paths: an explicit "no announcement" option or a separate move; settled in the Mau-Mau rules spec.
+- The exact shape of `Outcome` for teams, eliminations and multi-round scoring (Doppelkopf, Rommé penalty points, elimination games).

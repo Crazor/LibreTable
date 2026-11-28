@@ -16,6 +16,6 @@ version = "0.0.0"
 edition = "2024"
 rust-version = "1.85"
 # Default for every crate except `server`, which must override it with
-# AGPL-3.0-or-later (ADR-0002).
+# AGPL-3.0-or-later (docs/policies.md).
 license = "MPL-2.0"
 publish = false

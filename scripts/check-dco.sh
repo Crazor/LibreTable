@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Fails when a non-merge commit in the given range lacks a DCO
-# `Signed-off-by:` trailer matching its author (see docs/adr/0002-licences.md).
+# `Signed-off-by:` trailer matching its author (see docs/policies.md).
 #
 # Usage: scripts/check-dco.sh <base>..<head>
 set -euo pipefail

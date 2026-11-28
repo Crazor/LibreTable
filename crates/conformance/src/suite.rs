@@ -28,7 +28,7 @@
 //!   reasons of rejected moves) is declared in [`Suite::message_ids`], which
 //!   the localization check holds against the `en` catalog.
 //!
-//! The binary wire encoding (ADR-0003), opaque-ID reissue on hidden shuffles,
+//! The binary wire encoding, opaque-ID reissue on hidden shuffles,
 //! game-declared invariants and cross-target determinism (native vs. Wasm) are
 //! not checked yet.
 
