@@ -11,7 +11,7 @@ use libretable_game_core::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{CardIndex, Config, Phase, Scoring, State, card, suit_name};
+use crate::{CardIndex, Config, Phase, RoundResult, Scoring, State, card, suit_name};
 
 /// The draw pile zone; hands are zones `0..seats`.
 pub const DRAW_PILE: ZoneId = ZoneId(MAX_SEATS as u32);
@@ -27,6 +27,31 @@ pub enum HandView {
     Own(Vec<CardIndex>),
     /// Somebody else's hand: the opaque IDs of its face-down cards.
     Hidden(Vec<u32>),
+}
+
+/// Public facts about the turn in progress that the table does not show but
+/// a match needs to go on: who called, whether a missed or false call is
+/// open to be caught, passes and turns so far. Nothing here is hidden from
+/// anyone.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Flow {
+    /// The seat whose turn it is called in its current run of turns.
+    pub called: bool,
+    /// A play in the current run of turns left exactly one card.
+    pub played_to_one: bool,
+    /// The seat of the previous run of turns, and whether it called.
+    pub previous: Option<(Seat, bool)>,
+    /// The previous run of turns ended with a missed or false call that is
+    /// still open to be caught.
+    pub fault: bool,
+    /// Calling is still possible this turn.
+    pub call_open: bool,
+    /// Catching is still possible this turn.
+    pub catch_open: bool,
+    /// Passes in a row.
+    pub passes: u8,
+    /// Turns completed in this round.
+    pub turns: u32,
 }
 
 /// What one observer may know.
@@ -59,6 +84,12 @@ pub struct View {
     pub round: u8,
     /// Round wins or penalty points, by seat.
     pub scores: Vec<u32>,
+    /// Results of the rounds played.
+    pub results: Vec<RoundResult>,
+    /// The card the observer just drew, while it decides to play or keep it.
+    pub drawn: Option<CardIndex>,
+    /// Public facts about the turn in progress.
+    pub flow: Flow,
 }
 
 pub(crate) fn view(state: &State, observer: Observer) -> View {
@@ -106,6 +137,20 @@ pub(crate) fn view(state: &State, observer: Observer) -> View {
         last_card,
         round: state.round,
         scores: state.scores.clone(),
+        results: state.results.clone(),
+        drawn: (state.phase == Phase::Drawn && observer.seat() == Some(state.turn))
+            .then(|| state.hand(state.turn).last().map(|slot| slot.card))
+            .flatten(),
+        flow: Flow {
+            called: state.called,
+            played_to_one: state.played_to_one,
+            previous: state.previous,
+            fault: state.fault,
+            call_open: state.call_open,
+            catch_open: state.catch_open,
+            passes: state.passes,
+            turns: state.turns,
+        },
     }
 }
 

@@ -344,6 +344,12 @@ function renderPrompt(prompt, table) {
       }, t('server-page-submit'))));
 }
 
+// Whether the match's game can be played by the ISMCTS bot.
+function searchable() {
+  const info = welcome && joined && welcome.games.find((entry) => entry.id === joined.game);
+  return Boolean(info && info.ismcts);
+}
+
 function renderSeatControls(seat) {
   const driver = state.drivers[seat];
   const select = el('select', {
@@ -351,7 +357,8 @@ function renderSeatControls(seat) {
     onchange: (event) => send('set-driver', { seat, driver: event.target.value }),
   },
   el('option', { value: 'human', selected: driver === 'human' }, t('server-page-driver-human')),
-  el('option', { value: 'bot', selected: driver === 'bot' }, t('server-page-driver-bot')));
+  el('option', { value: 'bot', selected: driver === 'bot' }, t('server-page-driver-bot')),
+  ...(searchable() ? [el('option', { value: 'ismcts', selected: driver === 'ismcts' }, t('server-page-driver-ismcts'))] : []));
   const acting = state.pending.seats.includes(seat);
   return el('div', { class: 'seat-controls' },
     el('label', {}, `${t('server-page-driver')} `, select),

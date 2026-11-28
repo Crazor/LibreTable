@@ -358,6 +358,7 @@ fn welcome(build: &str, locale: &str) -> ServerMessage {
                 id: entry.id.to_owned(),
                 variant: libretable_registry::visit(entry.id, DefaultVariant)
                     .unwrap_or(serde_json::Value::Null),
+                ismcts: entry.searchable,
             })
             .collect(),
         messages,

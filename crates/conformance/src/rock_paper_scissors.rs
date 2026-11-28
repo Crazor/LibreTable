@@ -32,10 +32,10 @@
 //! A throw is one option choice: `rps-rock`, `rps-paper` or `rps-scissors`.
 
 use libretable_game_core::{
-    Attribute, Choice, Component, ComponentId, ComponentKind, Face, Game, GameId, GameRng,
-    IllegalMove, Indicator, IndicatorKind, IndicatorValue, InvalidVariant, Layout, MAX_SEATS,
-    Observer, Outcome, Pending, Seat, SeatCount, SeatResult, SeatSet, TableModel, Variant,
-    Visibility, Zone, ZoneId, ZoneKind,
+    Attribute, Choice, Component, ComponentId, ComponentKind, Determinize, Face, Game, GameId,
+    GameRng, IllegalMove, Indicator, IndicatorKind, IndicatorValue, InvalidVariant, Layout,
+    MAX_SEATS, Observer, Outcome, Pending, Seat, SeatCount, SeatResult, SeatSet, TableModel,
+    Variant, Visibility, Zone, ZoneId, ZoneKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -411,6 +411,32 @@ pub fn suite(matches: usize, seed: libretable_game_core::Seed) -> crate::Suite<R
         candidate_moves: |_| Shape::ALL.to_vec(),
         hidden_variants: Some(hidden_variants),
         message_ids: MESSAGE_IDS,
+        determinize: crate::determinizer::<RockPaperScissors>(),
+    }
+}
+
+impl Determinize for RockPaperScissors {
+    /// The sealed throws of the other seats that have thrown are drawn
+    /// uniformly; everything else is in the view.
+    fn determinize(view: &View, seat: Seat, rng: &mut GameRng) -> State {
+        let throws = view
+            .throws
+            .iter()
+            .zip((0..).map_while(Seat::new))
+            .map(|(throw, owner)| {
+                if owner == seat || view.waiting.contains(owner) {
+                    *throw
+                } else {
+                    rng.choose(&Shape::ALL).copied()
+                }
+            })
+            .collect();
+        State {
+            rounds: view.rounds,
+            throws,
+            history: view.history.clone(),
+            scores: view.scores.clone(),
+        }
     }
 }
 

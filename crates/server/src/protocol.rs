@@ -39,6 +39,17 @@ pub enum Driver {
     Human,
     /// The server plays the seat with a seeded random bot.
     Bot,
+    /// The server plays the seat with a seeded ISMCTS bot (games with
+    /// `GameInfo::ismcts` only).
+    Ismcts,
+}
+
+impl Driver {
+    /// Whether the server plays the seat.
+    #[must_use]
+    pub const fn is_bot(self) -> bool {
+        !matches!(self, Self::Human)
+    }
 }
 
 /// Whose view a client wants: `{"seat": 0}`, `"spectator"` or
@@ -207,6 +218,8 @@ pub struct GameInfo {
     pub id: String,
     /// The standard ruleset as JSON, a starting point for `create.variant`.
     pub variant: Value,
+    /// Whether seats can be driven by the ISMCTS bot.
+    pub ismcts: bool,
 }
 
 /// The `state` message.

@@ -262,3 +262,26 @@ fn mau_mau_simulates_and_its_golden_replays_replay() {
         "{out}"
     );
 }
+
+#[test]
+fn ismcts_seats_play_searchable_games() {
+    let out = stdout(&table(
+        &[
+            "simulate",
+            "mau-mau",
+            "-n",
+            "4",
+            "--bots",
+            "ismcts,bot",
+            "--iterations",
+            "50",
+        ],
+        "",
+    ));
+    assert!(
+        out.starts_with("4 matches of Mau-Mau with 2 seats"),
+        "{out}"
+    );
+    let error = table(&["simulate", "mau-mau", "--bots", "human,bot"], "");
+    assert_eq!(error.status.code(), Some(2));
+}

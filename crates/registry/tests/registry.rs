@@ -34,3 +34,29 @@ fn unknown_ids_are_none() {
     assert_eq!(visit("no-such-game", Id), None);
     assert_eq!(find("no-such-game"), None);
 }
+
+struct Searchable;
+
+impl Visitor for Searchable {
+    type Output = bool;
+
+    fn visit<G: RegisteredGame>(self) -> bool {
+        false
+    }
+
+    fn visit_searchable<G: RegisteredGame + libretable_game_core::Determinize>(self) -> bool {
+        true
+    }
+}
+
+#[test]
+fn searchable_games_are_visited_as_such() {
+    for entry in GAMES {
+        assert_eq!(
+            visit(entry.id, Searchable),
+            Some(entry.searchable),
+            "{}",
+            entry.id
+        );
+    }
+}

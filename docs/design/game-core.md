@@ -22,6 +22,8 @@ The `libretable-game-core` crate holds the `Game` trait and the types every othe
 
 Associated types `Config: Variant`, `State`, `Move`, `View` and `Event` are all `Clone + Debug + Eq + Serialize + DeserializeOwned`, so the conformance suite can compare and round-trip them. Functions: `setup`, `pending`, `legal_moves`, `apply`, `apply_chance`, `view`, `table`, `choices`, `outcome`.
 
+The optional trait `Determinize: Game` adds `determinize(view, seat, rng) -> State`: a state consistent with a seat's view, everything hidden from the seat filled in at random. Search bots need it ([bots](bots.md)); games without it are played by humans and the random bot only.
+
 - **Simultaneous moves (`All`).** `apply` is still called once per seat in arrival order. The game keeps sealed moves in its state, drops each submitted seat from the pending set and resolves when the last move arrives. Views hide sealed moves until then.
 - **Chance.** Randomness inside a move (drawing from a shuffled pile) uses the `rng` passed to `apply`. A chance step on its own (dealing, a die roll before anyone acts) is `Pending::Chance`, resolved by `apply_chance`. The default `apply_chance` panics, so only games that use `Pending::Chance` implement it.
 - **Events** are a per-game type for now. Generic animation events in terms of table components are derived later from the table model.
@@ -80,6 +82,7 @@ Confirmed by the architect while implementing milestone 1:
 - **`table(view)`** builds the table model from a view, never from the state, so it cannot leak.
 - **Choice paths are unique and prefix-free** per seat and point. "Play Jack" and "play Jack, wish Hearts" can therefore not both be legal at once; a game adds an explicit option (e.g. "no wish") instead. A subset is one choice carrying a canonical set.
 - **Games never match on `Observer`.** `Omniscient` exists only with the `dev` feature, and Cargo feature unification can enable it for a game crate that did not ask for it, so a `#[cfg(feature = "dev")]` arm inside a game would not compile, while a wildcard arm would fail open. Games use `seat()`, `sees_private_of(owner)` and `sees_all()`; only game-core matches on the variants.
+- **Determinization is a separate, optional trait** (`Determinize`), not a method of `Game`, so a game whose hidden information is hard to sample can ship without a search bot.
 - **Optional announcements are separate moves.** An announcement such as Mau-Mau's "last card" is a move of its own with a one-option path, offered whether or not it matters, never a suffix of a card play. No "no announcement" option is needed, card paths stay as they are, and the offer gives nothing away ([Mau-Mau rules](../games/mau-mau/rules.md#last-card-announcement)).
 - Interfaces are validated against Mau-Mau, Rommé, Connect Four and rock-paper-scissors, and requirements from the [reference games](../reference-games.md) must stay expressible without breaking changes.
 

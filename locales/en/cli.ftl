@@ -7,12 +7,12 @@ cli-usage =
     Usage:
     table [--lang <locale>] games
     {"    "}List the games.
-    table [--lang <locale>] play <game> [--seats human,bot,...] [--seed <n>] [--variant <json>] [--record <file>]
-    {"    "}Play a match in the terminal. Each seat is human or bot (default: human,bot).
+    table [--lang <locale>] play <game> [--seats human,bot,ismcts,...] [--seed <n>] [--variant <json>] [--record <file>] [--iterations <n>]
+    {"    "}Play a match in the terminal. Each seat is human, bot (random) or ismcts (search bot; default: human,bot).
     table [--lang <locale>] replay <record.json> [--seat <n>] [--each]
     {"    "}Replay a game record, showing the table of a seat (default: spectator).
-    table [--lang <locale>] simulate <game> [-n <matches>] [--seats <count>] [--seed <n>] [--variant <json>]
-    {"    "}Play matches between random bots and summarize the results.
+    table [--lang <locale>] simulate <game> [-n <matches>] [--seats <count> | --bots bot,ismcts,...] [--seed <n>] [--variant <json>] [--iterations <n>]
+    {"    "}Play matches between bots (random unless --bots says otherwise) and summarize the results.
     table help
     {"    "}Show this help.
     Without --lang, the locale comes from LC_ALL, LC_MESSAGES or LANG, else English.
@@ -28,7 +28,9 @@ cli-error-unknown-option = Unknown option "{ $option }".
 cli-error-option-value = Option { $option } needs a value.
 cli-error-bad-number = { $option }: "{ $value }" is not a valid number.
 cli-error-unknown-game = Unknown game "{ $game }". Run "table games" for the list.
-cli-error-seat-kind = Unknown seat kind "{ $kind }"; use human or bot.
+cli-error-seat-kind = Unknown seat kind "{ $kind }"; use human, bot or ismcts.
+cli-error-bot-kind = "{ $kind }" is not a bot; use bot or ismcts.
+cli-error-no-ismcts = { $game } has no ISMCTS bot.
 cli-error-seat-range = Seat { $seat } is not in this match.
 cli-error-seat-count = A match needs 1 to 64 seats, not { $count }.
 cli-error-variant-json = The variant is not valid for this game: { $reason }
@@ -57,6 +59,7 @@ cli-play-header =
     }, seed { $seed }.
 cli-seat-human = Seat { $seat }: human
 cli-seat-bot = Seat { $seat }: bot
+cli-seat-ismcts = Seat { $seat }: ISMCTS bot
 cli-prompt = Seat { $seat }, choose:
 cli-prompt-item = { $number }) { $choice }
 cli-prompt-made = Chosen so far: { $choices }

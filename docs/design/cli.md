@@ -8,9 +8,9 @@ The `libretable-cli` crate builds the binary `table`: play a match in the termin
 cargo run -p libretable-cli -- <command>     # or target/debug/table <command>
 
 table games
-table play <game> [--seats human,bot,...] [--seed <n>] [--variant <json>] [--record <file>]
+table play <game> [--seats human,bot,ismcts,...] [--seed <n>] [--variant <json>] [--record <file>] [--iterations <n>]
 table replay <record.json> [--seat <n>] [--each]
-table simulate <game> [-n <matches>] [--seats <count>] [--seed <n>] [--variant <json>] [--max-moves <n>]
+table simulate <game> [-n <matches>] [--seats <count> | --bots bot,ismcts,...] [--seed <n>] [--variant <json>] [--max-moves <n>] [--iterations <n>]
 table help
 ```
 
@@ -19,9 +19,10 @@ table help
 - `--variant` is the game's config as JSON (e.g. `'{"rounds":1}'`); default is the standard ruleset.
 - Seats are numbered from 0, as in records.
 - **Seeds.** `--seed <n>` seeds a master `GameRng`; the match seed and one seed per bot derive from it (`session::derive_seed`), so a whole run repeats exactly. `play` without `--seed` takes one from the clock and prints it; `simulate` defaults to 0.
+- **Seat kinds:** `human`, `bot` (the random bot, also `random`) and `ismcts` (the search bot, for games the registry marks `searchable`; otherwise an error). `--iterations` sets ISMCTS iterations per decision (default 500). See [bots](bots.md).
 - **play.** Default seats `human,bot`. At a human seat the CLI shows that seat's table and the numbered selectable choices; input is a number, `u` (undo) or `q` (quit, also end of input). With more than one human seat a hand-over prompt (privacy screen) comes before each change of human seat and clears an interactive terminal. Bot moves are announced without revealing them. Without humans, the spectator table is shown whenever it changes. At the end: spectator table and result. `--record` writes the record, also of an abandoned match.
 - **replay.** The game comes from the record's `game` field. The whole record is checked first; then every move is listed as its choice path (as seen by the moving seat), followed by the table of `--seat` (default spectator) and the result. `--each` shows the table after every move.
-- **simulate.** Plays `-n` matches (default 100) with `--seats` random bots (default 2) and prints moves in total, wins (rank 1, ties included) and average score per seat. A match longer than `--max-moves` (default 100 000) is an error.
+- **simulate.** Plays `-n` matches (default 100) with `--seats` random bots (default 2), or with the bots listed in `--bots`, and prints moves in total, wins (rank 1, ties included) and average score per seat. A match longer than `--max-moves` (default 100 000) is an error.
 - Exit codes: 0 success, 1 runtime error, 2 wrong command line (usage is printed).
 - The build ID in records is the compile-time `BUILD_ID` environment variable, else `cli-<version>`.
 

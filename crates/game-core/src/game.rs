@@ -178,3 +178,19 @@ pub trait Game {
     /// The result once the game is finished; `None` before.
     fn outcome(state: &Self::State) -> Option<Outcome>;
 }
+
+/// Optional companion of [`Game`] for search bots: turns a seat's view into a
+/// full state by filling in, at random, everything hidden from that seat
+/// (a *determinization*). Bots that search (ISMCTS) sample many of them,
+/// because they see only views and cannot build a state themselves.
+///
+/// Its only input is the view, so it cannot leak hidden information. A game
+/// without it can still be played by humans and the random bot.
+pub trait Determinize: Game {
+    /// A state whose view for `seat` equals `view` (the view of `seat`),
+    /// with everything hidden from `seat` drawn from `rng`: uniformly among
+    /// the possibilities consistent with the view, unless the game documents
+    /// otherwise. The conformance suite checks the view equality and that
+    /// `seat` has the same legal moves as in the real state.
+    fn determinize(view: &Self::View, seat: Seat, rng: &mut GameRng) -> Self::State;
+}

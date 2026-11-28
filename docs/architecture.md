@@ -130,7 +130,7 @@ Clients render a generic **table model**, not game-specific screens; a new game 
 
 The default bot is a generic Information Set Monte Carlo Tree Search (ISMCTS) player that works for every game through the `Game` trait alone; per-game heuristics and exact solvers are optional add-ons.
 
-- **Hidden information:** the bot samples determinizations consistent with its own view; it never reads hidden state.
+- **Hidden information:** the bot samples determinizations consistent with its own view; it never reads hidden state. Games provide the sampling through the optional `Determinize` trait ([design/bots.md](design/bots.md)).
 - **Strength:** controlled by iteration budget and time; optional rollout policies and evaluation heuristics per game. Levels are calibrated by bot-vs-bot rating, not guessed.
 - **Personalities (later):** cautious, aggressive, "pub player" with human-like mistakes, deliberate forgetting where perfect memory would spoil the game.
 - **Explanations:** the search yields an estimated win probability (or expected score where "win" is ambiguous, e.g. Rommé penalty points) per legal move, with its uncertainty. This powers post-game analysis, coaching hints, the live trainer and puzzles. Estimates come only from the player's own view.

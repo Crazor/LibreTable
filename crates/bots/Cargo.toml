@@ -12,3 +12,8 @@ libretable-game-core = { path = "../game-core" }
 
 [dev-dependencies]
 libretable-conformance = { path = "../conformance" }
+libretable-mau-mau = { path = "../games/mau-mau" }
+
+[[bench]]
+name = "playouts"
+harness = false

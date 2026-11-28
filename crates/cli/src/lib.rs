@@ -16,7 +16,7 @@ pub mod render;
 use std::io::{BufRead, Write};
 use std::path::PathBuf;
 
-use commands::{PlayOptions, ReplayOptions, SeatKind, SimulateOptions};
+use commands::{DEFAULT_ITERATIONS, PlayOptions, ReplayOptions, SeatKind, SimulateOptions};
 
 /// Build ID written into records: the `BUILD_ID` environment
 /// variable at compile time (CI sets the git commit), else the crate version.
@@ -169,7 +169,7 @@ pub fn run(args: &[String], io: &mut Io<'_>) -> Result<(), CliError> {
         "play" => {
             let parsed = Parsed::parse(
                 rest,
-                &["--seats", "--seed", "--variant", "--record"],
+                &["--seats", "--seed", "--variant", "--record", "--iterations"],
                 Some("<game>"),
             )?;
             let game = game(&parsed.positional[0])?;
@@ -185,6 +185,7 @@ pub fn run(args: &[String], io: &mut Io<'_>) -> Result<(), CliError> {
                 },
                 variant: parsed.value("--variant").map(str::to_owned),
                 record: parsed.value("--record").map(PathBuf::from),
+                iterations: parsed.number_or("--iterations", DEFAULT_ITERATIONS)?,
             };
             game.play(&options, io)
         }
@@ -221,13 +222,26 @@ pub fn run(args: &[String], io: &mut Io<'_>) -> Result<(), CliError> {
         "simulate" => {
             let parsed = Parsed::parse(
                 rest,
-                &["-n", "--seats", "--seed", "--variant", "--max-moves"],
+                &[
+                    "-n",
+                    "--seats",
+                    "--bots",
+                    "--seed",
+                    "--variant",
+                    "--max-moves",
+                    "--iterations",
+                ],
                 Some("<game>"),
             )?;
             let game = game(&parsed.positional[0])?;
             let options = SimulateOptions {
                 matches: parsed.number_or("-n", 100)?,
                 seats: parsed.number_or("--seats", 2)?,
+                bots: match parsed.value("--bots") {
+                    Some(list) => Some(list.split(',').map(bot_kind).collect::<Result<_, _>>()?),
+                    None => None,
+                },
+                iterations: parsed.number_or("--iterations", DEFAULT_ITERATIONS)?,
                 seed: parsed.number_or("--seed", 0)?,
                 variant: parsed.value("--variant").map(str::to_owned),
                 max_moves: parsed.number_or("--max-moves", 100_000)?,
@@ -248,8 +262,19 @@ fn game(id: &str) -> Result<Box<dyn registry::GameEntry>, CliError> {
 fn seat_kind(text: &str) -> Result<SeatKind, CliError> {
     match text.trim() {
         "human" => Ok(SeatKind::Human),
-        "bot" => Ok(SeatKind::Bot),
+        "bot" | "random" => Ok(SeatKind::Bot),
+        "ismcts" => Ok(SeatKind::Ismcts),
         other => Err(CliError::usage(tr!("cli-error-seat-kind", kind = other))),
+    }
+}
+
+fn bot_kind(text: &str) -> Result<SeatKind, CliError> {
+    match seat_kind(text)? {
+        SeatKind::Human => Err(CliError::usage(tr!(
+            "cli-error-bot-kind",
+            kind = text.trim()
+        ))),
+        kind => Ok(kind),
     }
 }
 

@@ -373,3 +373,26 @@ fn mau_mau_plays_to_the_end_with_a_human_and_bots() {
     let state = play_out(&mut client, last_state(&replies));
     assert_eq!(state.outcome.unwrap().seats.len(), 3);
 }
+
+#[test]
+fn ismcts_drives_mau_mau_seats() {
+    let server = Server::new("test");
+    let mut client = Client::new(&server);
+    let welcome = client.send(ClientMessage::Hello { locale: None });
+    let ServerMessage::Welcome { games, .. } = &welcome[0] else {
+        panic!("{welcome:?}");
+    };
+    assert!(games.iter().all(|game| game.ismcts));
+    let replies = client.send(ClientMessage::Create {
+        game: "mau-mau".to_owned(),
+        seats: 2,
+        seed: Some(3),
+        variant: None,
+        drivers: Some(vec![Driver::Ismcts, Driver::Bot]),
+        observers: None,
+    });
+    assert_eq!(errors(&replies), Vec::<String>::new());
+    let state = last_state(&replies);
+    assert!(state.outcome.is_some(), "bots play the match to the end");
+    assert_eq!(state.drivers, [Driver::Ismcts, Driver::Bot]);
+}

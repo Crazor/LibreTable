@@ -6,10 +6,10 @@
 
 use std::marker::PhantomData;
 
-use libretable_game_core::Game;
+use libretable_game_core::{Determinize, Game};
 use libretable_registry::{GAMES, RegisteredGame, Visitor};
 
-use crate::commands::{self, PlayOptions, ReplayOptions, SimulateOptions};
+use crate::commands::{self, BotMaker, PlayOptions, ReplayOptions, SimulateOptions};
 use crate::{CliError, Io};
 
 /// The commands of one game, with the game type erased.
@@ -39,7 +39,11 @@ pub trait GameEntry {
     fn simulate(&self, options: &SimulateOptions, io: &mut Io<'_>) -> Result<(), CliError>;
 }
 
-struct Entry<G>(PhantomData<fn() -> G>);
+/// One game's commands, with the bots it supports.
+struct Entry<G: Game> {
+    bots: BotMaker<G>,
+    game: PhantomData<fn() -> G>,
+}
 
 impl<G: Game> GameEntry for Entry<G> {
     fn id(&self) -> &'static str {
@@ -47,7 +51,7 @@ impl<G: Game> GameEntry for Entry<G> {
     }
 
     fn play(&self, options: &PlayOptions, io: &mut Io<'_>) -> Result<(), CliError> {
-        commands::play::<G>(options, io)
+        commands::play::<G>(options, self.bots, io)
     }
 
     fn replay(&self, json: &str, options: &ReplayOptions, io: &mut Io<'_>) -> Result<(), CliError> {
@@ -55,7 +59,7 @@ impl<G: Game> GameEntry for Entry<G> {
     }
 
     fn simulate(&self, options: &SimulateOptions, io: &mut Io<'_>) -> Result<(), CliError> {
-        commands::simulate::<G>(options, io)
+        commands::simulate::<G>(options, self.bots, io)
     }
 }
 
@@ -65,7 +69,17 @@ impl Visitor for MakeEntry {
     type Output = Box<dyn GameEntry>;
 
     fn visit<G: RegisteredGame>(self) -> Box<dyn GameEntry> {
-        Box::new(Entry::<G>(PhantomData))
+        Box::new(Entry::<G> {
+            bots: commands::random_bots::<G>,
+            game: PhantomData,
+        })
+    }
+
+    fn visit_searchable<G: RegisteredGame + Determinize>(self) -> Box<dyn GameEntry> {
+        Box::new(Entry::<G> {
+            bots: commands::search_bots::<G>,
+            game: PhantomData,
+        })
     }
 }
 
