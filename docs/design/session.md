@@ -23,7 +23,7 @@ A session owns the authoritative state, the match's `GameRng` and the `GameRecor
 - **`All` and `Any`.** The session accepts a move from any pending seat in arrival order; the order it applies them is the order in the record. Front ends decide whom to ask: the CLI asks the lowest pending seat first.
 - **Errors** (`SubmitError`): `NotPending(seat)`, `NotSelectable { index }`, `Incomplete`, `Ambiguous(SelectionError)`, `Illegal(IllegalMove)`. A rejected call leaves the session unchanged.
 - **Equality.** Two sessions are equal when state, generator and record are; a session restored with `from_record` equals the original. `Debug` prints only game, seats, move count and pending, never the state.
-- **Events of chance steps** resolved in `new` are not reported (no game uses an initial chance step yet; revisit with Mau-Mau's deal).
+- **Events of chance steps** resolved in `new` are not reported (no game uses an initial chance step yet; Mau-Mau deals in `setup`, which reports no events).
 - `derive_seed(&mut GameRng) -> Seed` draws a fresh 256-bit seed, so one master seed can determine a match seed and one seed per bot.
 
 Not yet: seats as `Human(local) | Human(remote) | Bot(level)` and bot takeover, timeouts, transports, snapshots. They will be built around this API. The dev server already keeps a driver (human or bot) and the human's draft per seat around a session, outside it ([server](server.md)).

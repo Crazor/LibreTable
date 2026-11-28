@@ -437,7 +437,7 @@ fn the_table_shows_sealed_throws_only_to_their_seat() {
         zone.components.first().map(|c| c.face.clone())
     };
     assert!(
-        matches!(face(Observer::Seat(seat(0)), 0), Some(Face::Shown { key, .. }) if key == "rock")
+        matches!(face(Observer::Seat(seat(0)), 0), Some(Face::Shown { key, .. }) if key == "rps-rock")
     );
     assert_eq!(face(Observer::Seat(seat(1)), 0), Some(Face::Hidden));
     assert_eq!(face(Observer::Spectator, 0), Some(Face::Hidden));

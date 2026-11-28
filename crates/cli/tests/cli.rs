@@ -42,7 +42,7 @@ fn temp(name: &str) -> PathBuf {
 fn lists_games() {
     assert_eq!(
         stdout(&table(&["games"], "")),
-        "Games:\n  rock-paper-scissors: Rock, Paper, Scissors\n"
+        "Games:\n  mau-mau: Mau-Mau\n  rock-paper-scissors: Rock, Paper, Scissors\n"
     );
 }
 
@@ -143,7 +143,7 @@ fn human_input_goes_through_the_selection_protocol() {
         3
     );
     assert!(out.contains("Seat 1 (bot) has decided.\n"));
-    assert!(out.contains("    #64 token: rock (shape: rock)\n"));
+    assert!(out.contains("    #64 token: Rock (shape: rock)\n"));
     assert!(out.contains("Result:\n"));
 }
 
@@ -218,7 +218,7 @@ fn locale_comes_from_lang_option_then_environment() {
     let german = stdout(&table(&["--lang", "de", "games"], ""));
     assert_eq!(
         german,
-        "Spiele:\n  rock-paper-scissors: Schere, Stein, Papier\n"
+        "Spiele:\n  mau-mau: Mau-Mau\n  rock-paper-scissors: Schere, Stein, Papier\n"
     );
 
     let output = Command::new(env!("CARGO_BIN_EXE_table"))
@@ -236,4 +236,29 @@ fn locale_comes_from_lang_option_then_environment() {
     // An unsupported locale falls back to English.
     let fallback = stdout(&table(&["games", "--lang", "fr"], ""));
     assert!(fallback.starts_with("Games:\n"));
+}
+
+#[test]
+fn mau_mau_simulates_and_its_golden_replays_replay() {
+    let out = stdout(&table(
+        &["simulate", "mau-mau", "-n", "5", "--seats", "3"],
+        "",
+    ));
+    assert!(
+        out.starts_with("5 matches of Mau-Mau with 3 seats"),
+        "{out}"
+    );
+    let golden = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../games/mau-mau/tests/golden/two-players-standard.json"
+    );
+    let out = stdout(&table(
+        &["--lang", "de", "replay", golden, "--seat", "0"],
+        "",
+    ));
+    assert!(out.contains("Herz-Bube"), "{out}");
+    assert!(
+        out.contains("Ergebnis:\n  Platz 0: Rang 1, Punkte 1\n"),
+        "{out}"
+    );
 }

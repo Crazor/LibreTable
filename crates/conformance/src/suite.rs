@@ -14,9 +14,12 @@
 //!   serializing twice gives identical text.
 //! - **Determinism:** replaying the match's record, also after a JSON round
 //!   trip, reaches the identical state and generator.
-//! - **No leaks** (scaffold): a seat's view is unchanged across the states the
-//!   game declares to differ from the real one only in information hidden from
-//!   that seat.
+//! - **No leaks:** a seat's view is unchanged across the states the game
+//!   declares to differ from the real one only in information hidden from
+//!   that seat. Opaque IDs are reissued: per observer, a component ID once
+//!   shown face up is never face down later, and a face-down ID never shows
+//!   up face down in another zone (it was moved between hidden zones, or
+//!   shuffled into another pile, without a fresh ID).
 //! - **Table:** every seat's and the spectator's table model has unique zone
 //!   and component IDs and shows no face where its observer may
 //!   not look ([`check_table`]).
@@ -25,18 +28,20 @@
 //!   ([`check_selection`]).
 //! - **Messages:** every Fluent message ID the game emits (its game ID, zone
 //!   and indicator labels, message indicator values, option choices and the
-//!   reasons of rejected moves) is declared in [`Suite::message_ids`], which
-//!   the localization check holds against the `en` catalog.
+//!   reasons of rejected moves, face keys of face-up components) is declared
+//!   in [`Suite::message_ids`], which the localization check holds against the
+//!   `en` catalog.
 //!
-//! The binary wire encoding, opaque-ID reissue on hidden shuffles,
-//! game-declared invariants and cross-target determinism (native vs. Wasm) are
-//! not checked yet.
+//! The binary wire encoding, opaque-ID reissue when hidden components are
+//! shuffled within one zone, game-declared invariants and cross-target
+//! determinism (native vs. Wasm) are not checked yet.
 
+use std::collections::BTreeMap;
 use std::fmt;
 
 use libretable_game_core::{
-    Choice, Game, GameRecord, GameRng, IndicatorValue, Observer, Pending, RecordOf, Seat,
-    SeatCount, Seed, Variant, check_selection, check_table, replay,
+    Choice, ComponentId, Face, Game, GameRecord, GameRng, IndicatorValue, Observer, Pending,
+    RecordOf, Seat, SeatCount, Seed, Variant, ZoneId, check_selection, check_table, replay,
 };
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -94,7 +99,8 @@ pub enum Check {
     RoundTrip,
     /// Replaying a record did not reach the same state.
     Determinism,
-    /// A view changed with information hidden from its observer.
+    /// A view changed with information hidden from its observer, or an
+    /// opaque ID was not reissued.
     Leak,
     /// A table model is malformed or shows what its observer may not see.
     Table,
@@ -163,6 +169,7 @@ pub fn run<G: Game>(suite: &Suite<G>) -> Result<Report, Failure> {
                 record: GameRecord::new(G::ID, BUILD, config.clone(), *seats, seed),
                 driver,
                 report: &mut report,
+                seen: vec![BTreeMap::new(); usize::from(seats.get()) + 1],
             };
             run.play()?;
             report.matches += 1;
@@ -214,6 +221,18 @@ struct Match<'a, G: Game> {
     /// Picks moves and leak samples; separate from the match's own generator.
     driver: GameRng,
     report: &'a mut Report,
+    /// Per observer (seats, then the spectator): what each component ID has
+    /// looked like so far.
+    seen: Vec<BTreeMap<ComponentId, Seen>>,
+}
+
+/// What one observer has seen of one component ID.
+#[derive(Clone, Copy, Debug, Default)]
+struct Seen {
+    /// It was face up at some point.
+    shown: bool,
+    /// The zone it was last face down in.
+    hidden_in: Option<ZoneId>,
 }
 
 impl<G: Game> Match<'_, G> {
@@ -430,7 +449,7 @@ impl<G: Game> Match<'_, G> {
         Ok(())
     }
 
-    fn check_table(&self, view: &G::View, seat: Option<Seat>) -> Result<(), Failure> {
+    fn check_table(&mut self, view: &G::View, seat: Option<Seat>) -> Result<(), Failure> {
         // `TableModel` is a game-core type whose serialization a game cannot
         // change, so it is not round-tripped here (game-core tests it).
         let table = G::table(view);
@@ -439,11 +458,55 @@ impl<G: Game> Match<'_, G> {
         })?;
         for zone in &table.zones {
             self.check_message("zone label", &zone.label)?;
+            for component in &zone.components {
+                if let Face::Shown { key, .. } = &component.face {
+                    self.check_message("face key", key)?;
+                }
+            }
         }
+        self.check_opaque_ids(&table, seat)?;
         for indicator in &table.indicators {
             self.check_message("indicator label", &indicator.label)?;
             if let IndicatorValue::Message(id) = &indicator.value {
                 self.check_message("indicator value", id)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Opaque IDs are reissued: an ID shown face up is never face down later,
+    /// and a face-down ID stays in its zone.
+    fn check_opaque_ids(
+        &mut self,
+        table: &libretable_game_core::TableModel,
+        seat: Option<Seat>,
+    ) -> Result<(), Failure> {
+        let observer = seat.map_or(usize::from(self.record.seats.get()), |s| {
+            usize::from(s.index())
+        });
+        for zone in &table.zones {
+            for component in &zone.components {
+                let seen = self.seen[observer].entry(component.id).or_default();
+                let problem = match component.face {
+                    Face::Shown { .. } => {
+                        seen.shown = true;
+                        None
+                    }
+                    Face::Hidden if seen.shown => Some(format!(
+                        "{:?} was shown face up and is now face down in zone {:?} under the same ID",
+                        component.id, zone.id
+                    )),
+                    Face::Hidden => match seen.hidden_in.replace(zone.id) {
+                        Some(before) if before != zone.id => Some(format!(
+                            "face-down {:?} moved from zone {:?} to zone {:?} without a fresh ID",
+                            component.id, before, zone.id
+                        )),
+                        _ => None,
+                    },
+                };
+                if let Some(problem) = problem {
+                    return Err(self.fail(Check::Leak, format!("table of {seat:?}: {problem}")));
+                }
             }
         }
         Ok(())

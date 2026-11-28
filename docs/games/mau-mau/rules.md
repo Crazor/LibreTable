@@ -1,6 +1,6 @@
 # Mau-Mau
 
-Game ID `mau-mau`. A shedding game for 2 to 5 players (up to 10 with two decks): match the top card of the discard pile by suit or rank, and be the first to get rid of all your cards. Signed off by the architect on 2026-11-28.
+Game ID `mau-mau`. A shedding game for 2 to 5 players (up to 10 with two decks): match the top card of the discard pile by suit or rank, and be the first to get rid of all your cards. Signed off by the architect on 2026-11-28; amended the same day with the architect so that keeping a drawn card is always offered.
 
 ## Sources and licence
 
@@ -27,7 +27,7 @@ The start card takes effect as if seat 0's predecessor had played it ([special c
 On their turn a player does exactly one of:
 
 - **Play** one card from hand that fits the top discard: same suit or same rank. A Jack fits anything except another Jack ([Jack](#special-cards)). If a suit is wished, only that suit (or, with `jack_on_jack`, a Jack) fits.
-- **Draw** one card from the draw pile. This is always allowed, even with a playable card. If the drawn card fits, the player may play it at once (only that card); otherwise, or by choice, the turn ends.
+- **Draw** one card from the draw pile. This is always allowed, even with a playable card. Then the player plays the drawn card if it fits (only that card) or keeps it, which ends the turn. Keeping is offered even when the card does not fit, so whether a hidden drawn card fits never shows in whose turn it is.
 - **Pass**, only when nothing can be drawn (draw pile and reshuffle both empty). Passing is then allowed even with a playable card.
 
 A player whose hand becomes empty has gone out; the round ends at once.
@@ -110,7 +110,7 @@ Choice paths are unique and prefix-free for one seat at one point ([game-core](.
 | Play a Jack | `component(jack)`, `option(mau-mau-wish-<suit>)` | The Jack fits; four wish options. |
 | Draw | `zone(draw pile)` | A draw is possible. Also takes an open 7 penalty. |
 | Play the drawn card | `component(card)` (Jack: plus wish) | Right after a draw, the drawn card fits. |
-| End turn after drawing | `option(mau-mau-keep)` | Right after a draw, the drawn card fits. If it does not fit, the turn ends by itself. |
+| End turn after drawing | `option(mau-mau-keep)` | Right after a draw, always. |
 | Pass | `option(mau-mau-pass)` | Nothing can be drawn. |
 | Accept a skip | `option(mau-mau-accept-skip)` | Only with `eight_counter`, as the skipped player. Without it, a skipped seat gets no decision. |
 | Call last card | `option(mau-mau-last-card)` | `manual`, start of own turn, not yet called this turn. |
@@ -122,7 +122,7 @@ Exactly one seat decides at a time (`Pending::All` with one seat). Dealing happe
 
 - A seat sees its own hand, the number of cards in every other hand, in the draw pile and in the discard pile, the top discard face up, and every indicator. A spectator sees the same without any hand.
 - Only the top discard is shown. Every played card was public when it was played, but the view does not keep that history: remembering the pile is up to the player. A bot gets only the current view, so what it remembers of past views is the bot's own state and can scale with its difficulty level (bots design, issue 9).
-- The draw pile, the discards below the top and other seats' hands are face down with opaque IDs. A card that becomes hidden (drawn, covered on the discard pile, reshuffled) gets a fresh opaque ID, and IDs are reissued whenever hidden cards are shuffled, so nobody can follow a card by its ID.
+- The draw pile, the discards below the top and other seats' hands are face down with opaque IDs. A card that becomes hidden (drawn, covered on the discard pile, reshuffled) gets a fresh opaque ID, and IDs are reissued whenever hidden cards are shuffled, so nobody can follow a card by its ID. Another seat's hand gets all-new opaque IDs whenever it changes, as if its owner had sorted it, so which hidden card was played or kept is not traceable either.
 - Indicators: whose turn it is, the direction of play, an open draw penalty, the wished suit, last-card announcements, the round, and round wins or penalty points.
 - Zones: `draw pile` (stack, hidden), `discard` (stack, public; only the top card face up), one `hand` per seat (fan, owner only).
 
@@ -137,3 +137,8 @@ Each becomes a golden replay recorded during implementation, with its seed and m
 ## Not in this version
 
 Jacks doubling the score (Parlett), the Netherlands penalty of a whole new hand, Aces that must be covered, 36-card decks (Tschau Sepp), and catching by any seat in real time. Each can be added later as a typed option.
+
+## Implementation
+
+Crate `crates/games/mau-mau` (`libretable-mau-mau`), card types and names from `crates/cards`. Tests: `tests/rules.rs` (rules of this spec), `tests/conformance.rs` (the conformance suite over the standard rules and every house rule), `tests/golden.rs` with the example games above as records in `tests/golden/`. Bots and humans play it through the CLI (`table play mau-mau`) and the dev server.
+

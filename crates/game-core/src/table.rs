@@ -172,8 +172,9 @@ pub enum Face {
     Hidden,
     /// Face up.
     Shown {
-        /// Internal identity used for assets and as the base of message IDs,
-        /// e.g. `"queen-of-hearts"`. Never localized.
+        /// Internal identity used for assets, and the Fluent message ID of the
+        /// component's name, e.g. `"card-queen-of-hearts"`. The key itself is
+        /// never translated; renderers show the message.
         key: String,
         /// Semantic attributes for rendering and accessibility, e.g.
         /// `suit = hearts`, `rank = queen`.

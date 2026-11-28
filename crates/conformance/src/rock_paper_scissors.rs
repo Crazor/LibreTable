@@ -223,7 +223,7 @@ fn token(id: u32, shape: Option<Shape>) -> Component {
         id: ComponentId(id),
         kind: ComponentKind::Token,
         face: shape.map_or(Face::Hidden, |shape| Face::Shown {
-            key: shape.key().into(),
+            key: shape.option().into(),
             attributes: vec![Attribute::new("shape", shape.key())],
         }),
         rotation: 0,

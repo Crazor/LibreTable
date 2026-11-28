@@ -1,0 +1,2397 @@
+{
+  "schema": 1,
+  "game": "mau-mau",
+  "build": "golden",
+  "variant": {
+    "decks": 1,
+    "hand_size": 5,
+    "seven_stacking": true,
+    "eight_counter": false,
+    "jack_on_jack": false,
+    "jack_finish": true,
+    "ace_again": true,
+    "nine_reverses": true,
+    "announce": "manual",
+    "mau_penalty": 2,
+    "rounds": 2,
+    "scoring": "card-count"
+  },
+  "seats": 4,
+  "seed": "0500000000000000000000000000000000000000000000000000000000000000",
+  "moves": [
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 17,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 25,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 9,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 21,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 5,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 27,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 23,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 31,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 15,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 14,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 2,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 0,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 31,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 10,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 26,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 15,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 5,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 6,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 14,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 0,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 1,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 6,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 17,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 21,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 2,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 0,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 31,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 26,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 10,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 15,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 11,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 27,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 5,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 6,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "pass"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 17,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 21,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 13,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 29,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 31,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 2,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 26,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 29,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 30,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 0,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 26,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 3,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 21,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 30,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 6,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 1,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 6,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 5,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 17,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 25,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 26,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 29,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 9,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 14,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 19,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 11,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 13,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 15,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 10,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 10,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 2,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 11,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 14,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 9,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 31,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 25,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 15,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 23,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 18,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": "keep"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 19,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 3,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 0,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": "call"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "catch"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 9,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 25,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 29,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 5,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 18,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 19,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 14,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 30,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 27,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 21,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "hearts"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 23,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 31,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 25,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 1,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 2,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 18,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "call"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 10,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 13,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": "keep"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 29,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "call"
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 4,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 7,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "draw"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 23,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 19,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 3,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 11,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "catch"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 9,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 2,
+      "move": "catch"
+    },
+    {
+      "seat": 2,
+      "move": {
+        "play": {
+          "card": 8,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "catch"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 3,
+      "move": "call"
+    },
+    {
+      "seat": 3,
+      "move": {
+        "play": {
+          "card": 0,
+          "wish": null
+        }
+      }
+    }
+  ]
+}

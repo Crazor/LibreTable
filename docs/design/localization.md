@@ -36,9 +36,8 @@ The deterministic crates (`game-core`, `games/*`, `bots`, `conformance`) return 
 - `InvalidVariant::reason`, `IllegalMove::reason`;
 - `Zone::label`, `Indicator::label`, `IndicatorValue::Message`;
 - `Choice::Option`;
-- its `Game::ID` (display name).
-
-Face keys (`queen-of-hearts`) are not message IDs yet; the text renderer shows them as they are, with their attributes ([cli](cli.md)). How renderers name components in words is decided with Mau-Mau.
+- its `Game::ID` (display name);
+- the face key of a face-up component (`Face::Shown::key`): **a face key is the message ID of the component's name**, so renderers name any component generically. Card names are shared by the card games: `card-queen-of-hearts` = "Queen of Hearts" / "Herz-Dame" in `locales/*/cards.ftl`, listed in `libretable_cards::MESSAGE_IDS` (crate `libretable-cards`). Each card is named in full rather than composed from rank and suit, because languages compose them differently. A game lists the face keys it shows in its own `MESSAGE_IDS` (Mau-Mau lists its 32 cards).
 
 ### Discovering the IDs used in code
 

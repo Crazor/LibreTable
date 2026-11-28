@@ -15,3 +15,5 @@ unic-langid = "0.9.6"
 [dev-dependencies]
 libretable-conformance = { path = "../conformance" }
 libretable-game-core = { path = "../game-core" }
+libretable-cards = { path = "../cards" }
+libretable-mau-mau = { path = "../games/mau-mau" }

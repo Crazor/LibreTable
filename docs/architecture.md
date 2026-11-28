@@ -241,6 +241,7 @@ English is the source language and German the first translation; full screen-rea
 ```text
 /crates
   game-core/        Game trait, table model, selection protocol, RNG, records
+  cards/            playing-card types and names shared by the card games
   games/<game>/     one crate per game
   bots/             ISMCTS and heuristics
   session/          seats, transports interface, match flow

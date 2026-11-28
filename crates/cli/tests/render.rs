@@ -221,7 +221,7 @@ Round: 1
 Score (seat 0): 0
 Score (seat 1): 0
 [0] Throw: seat 0, player board, owner only, stack
-    #0 token: rock (shape: rock)
+    #0 token: Rock (shape: rock)
 [1] Throw: seat 1, player board, owner only, stack
     (empty)
 [64] Last round: shared, tableau, public, row
