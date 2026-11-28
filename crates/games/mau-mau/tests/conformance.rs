@@ -1,7 +1,7 @@
 //! The conformance suite for Mau-Mau, over the standard ruleset and every
 //! house rule.
 
-use libretable_conformance::{Suite, run};
+use libretable_conformance::{Suite, determinizer, run};
 use libretable_game_core::{GameRng, Seat, SeatCount, Seed};
 use libretable_mau_mau::{
     Announce, Config, MESSAGE_IDS, MauMau, Scoring, State, TURN_CAP_PER_SEAT, candidate_moves,
@@ -44,6 +44,7 @@ fn suite(setups: Vec<(Config, SeatCount)>, matches: usize, seed: u64) -> Suite<M
             hidden_variants(state, seat, rng, 2)
         }),
         message_ids: MESSAGE_IDS,
+        determinize: determinizer::<MauMau>(),
     }
 }
 

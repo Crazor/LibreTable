@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use libretable_bots::RandomBot;
+use libretable_bots::{IsmctsBot, IsmctsConfig, Player, RandomBot};
 use libretable_game_core::{
     Choice, Game, GameRng, InvalidVariant, Observer, RECORD_SCHEMA_VERSION, RecordOf, ReplayError,
     Seat, SeatCount, Seed, TableModel,
@@ -18,7 +18,52 @@ pub enum SeatKind {
     Human,
     /// A [`RandomBot`].
     Bot,
+    /// An [`IsmctsBot`], for games that implement
+    /// [`Determinize`](libretable_game_core::Determinize).
+    Ismcts,
 }
+
+/// Builds the bot for a seat kind (never [`SeatKind::Human`]) from a seed
+/// and the ISMCTS iteration budget; `None` if the game does not support
+/// that bot.
+pub type BotMaker<G> = fn(SeatKind, Seed, u32) -> Option<Box<dyn Player<G>>>;
+
+/// [`BotMaker`] for any game: random bots only.
+#[must_use]
+pub fn random_bots<G: Game>(
+    kind: SeatKind,
+    seed: Seed,
+    _iterations: u32,
+) -> Option<Box<dyn Player<G>>> {
+    match kind {
+        SeatKind::Bot => Some(Box::new(RandomBot::new(seed))),
+        SeatKind::Human | SeatKind::Ismcts => None,
+    }
+}
+
+/// [`BotMaker`] for games that implement
+/// [`Determinize`](libretable_game_core::Determinize): random and ISMCTS
+/// bots.
+#[must_use]
+pub fn search_bots<G: libretable_game_core::Determinize>(
+    kind: SeatKind,
+    seed: Seed,
+    iterations: u32,
+) -> Option<Box<dyn Player<G>>> {
+    match kind {
+        SeatKind::Ismcts => Some(Box::new(IsmctsBot::with_config(
+            seed,
+            IsmctsConfig {
+                iterations,
+                ..IsmctsConfig::default()
+            },
+        ))),
+        other => random_bots::<G>(other, seed, iterations),
+    }
+}
+
+/// ISMCTS iterations per decision unless `--iterations` says otherwise.
+pub const DEFAULT_ITERATIONS: u32 = 500;
 
 /// Options of `play`.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -31,6 +76,8 @@ pub struct PlayOptions {
     pub variant: Option<String>,
     /// Where to write the record when the match ends or is abandoned.
     pub record: Option<PathBuf>,
+    /// ISMCTS iterations per decision.
+    pub iterations: u32,
 }
 
 /// Options of `replay`.
@@ -49,8 +96,12 @@ pub struct ReplayOptions {
 pub struct SimulateOptions {
     /// Number of matches.
     pub matches: usize,
-    /// Seats per match, all bots.
+    /// Seats per match, all random bots, unless `bots` is given.
     pub seats: u8,
+    /// The bot at each seat; overrides `seats`.
+    pub bots: Option<Vec<SeatKind>>,
+    /// ISMCTS iterations per decision.
+    pub iterations: u32,
     /// Master seed; match and bot seeds derive from it.
     pub seed: u64,
     /// The variant as JSON; `None` for the standard ruleset.
@@ -64,19 +115,24 @@ pub struct SimulateOptions {
 /// # Errors
 ///
 /// [`CliError`] on invalid options or I/O failure.
-pub fn play<G: Game>(options: &PlayOptions, io: &mut Io<'_>) -> Result<(), CliError> {
+pub fn play<G: Game>(
+    options: &PlayOptions,
+    make: BotMaker<G>,
+    io: &mut Io<'_>,
+) -> Result<(), CliError> {
     let seats = seat_count(options.seats.len())?;
     let config = variant::<G>(options.variant.as_deref())?;
     let mut master = GameRng::from_seed(Seed::from_u64(options.seed));
     let match_seed = derive_seed(&mut master);
-    let mut bots: Vec<Option<RandomBot>> = options
-        .seats
-        .iter()
-        .map(|kind| {
-            let bot = RandomBot::new(derive_seed(&mut master));
-            (*kind == SeatKind::Bot).then_some(bot)
-        })
-        .collect();
+    let mut bots: Vec<Option<Box<dyn Player<G>>>> = Vec::new();
+    for kind in &options.seats {
+        // One seed per seat, also for humans, so seeds do not shift.
+        let seed = derive_seed(&mut master);
+        bots.push(match kind {
+            SeatKind::Human => None,
+            bot => Some(bot_for(make, *bot, seed, options.iterations)?),
+        });
+    }
     let humans = options.seats.len() - bots.iter().flatten().count();
     let mut session = Session::<G>::new(config, seats, match_seed, BUILD).map_err(invalid)?;
 
@@ -90,6 +146,7 @@ pub fn play<G: Game>(options: &PlayOptions, io: &mut Io<'_>) -> Result<(), CliEr
         let id = match kind {
             SeatKind::Human => "cli-seat-human",
             SeatKind::Bot => "cli-seat-bot",
+            SeatKind::Ismcts => "cli-seat-ismcts",
         };
         io.line(&tr!(id, seat = seat))?;
     }
@@ -102,7 +159,7 @@ pub fn play<G: Game>(options: &PlayOptions, io: &mut Io<'_>) -> Result<(), CliEr
     // every seat in turn, for `Any` it fixes the arrival order.
     while let Some(seat) = session.pending().seats().iter().next() {
         if let Some(bot) = &mut bots[usize::from(seat.index())] {
-            session.play(seat, bot).map_err(rejected)?;
+            session.play(seat, bot.as_mut()).map_err(rejected)?;
             if humans == 0 {
                 show_changes(&session, &mut shown, io)?;
             } else {
@@ -212,8 +269,16 @@ pub fn replay<G: Game>(
 /// # Errors
 ///
 /// [`CliError`] on invalid options or a match exceeding `max_moves`.
-pub fn simulate<G: Game>(options: &SimulateOptions, io: &mut Io<'_>) -> Result<(), CliError> {
-    let seats = seat_count(usize::from(options.seats))?;
+pub fn simulate<G: Game>(
+    options: &SimulateOptions,
+    make: BotMaker<G>,
+    io: &mut Io<'_>,
+) -> Result<(), CliError> {
+    let kinds = options
+        .bots
+        .clone()
+        .unwrap_or_else(|| vec![SeatKind::Bot; usize::from(options.seats)]);
+    let seats = seat_count(kinds.len())?;
     let config = variant::<G>(options.variant.as_deref())?;
     let mut master = GameRng::from_seed(Seed::from_u64(options.seed));
     let n = usize::from(seats.get());
@@ -223,9 +288,15 @@ pub fn simulate<G: Game>(options: &SimulateOptions, io: &mut Io<'_>) -> Result<(
     for number in 1..=options.matches {
         let mut session = Session::<G>::new(config.clone(), seats, derive_seed(&mut master), BUILD)
             .map_err(invalid)?;
-        let mut bots: Vec<RandomBot> = (0..n)
-            .map(|_| RandomBot::new(derive_seed(&mut master)))
-            .collect();
+        let mut bots = Vec::with_capacity(n);
+        for kind in &kinds {
+            bots.push(bot_for(
+                make,
+                *kind,
+                derive_seed(&mut master),
+                options.iterations,
+            )?);
+        }
         while let Some(seat) = session.pending().seats().iter().next() {
             if session.record().moves.len() >= options.max_moves {
                 return Err(CliError::new(tr!(
@@ -235,7 +306,7 @@ pub fn simulate<G: Game>(options: &SimulateOptions, io: &mut Io<'_>) -> Result<(
                 )));
             }
             session
-                .play(seat, &mut bots[usize::from(seat.index())])
+                .play(seat, bots[usize::from(seat.index())].as_mut())
                 .map_err(rejected)?;
         }
         moves += session.record().moves.len();
@@ -267,6 +338,17 @@ pub fn simulate<G: Game>(options: &SimulateOptions, io: &mut Io<'_>) -> Result<(
         ))?;
     }
     Ok(())
+}
+
+/// The bot of `kind` for `G`, or an error if the game has none.
+fn bot_for<G: Game>(
+    make: BotMaker<G>,
+    kind: SeatKind,
+    seed: Seed,
+    iterations: u32,
+) -> Result<Box<dyn Player<G>>, CliError> {
+    make(kind, seed, iterations)
+        .ok_or_else(|| CliError::usage(tr!("cli-error-no-ismcts", game = tr!(G::ID.as_str()))))
 }
 
 /// Asks a human for a whole choice path. `None` if they quit.

@@ -9,4 +9,4 @@
 pub mod rock_paper_scissors;
 pub mod suite;
 
-pub use suite::{Check, Failure, HiddenVariants, Report, Suite, run};
+pub use suite::{Check, Determinizer, Failure, HiddenVariants, Report, Suite, determinizer, run};

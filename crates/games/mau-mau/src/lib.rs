@@ -29,13 +29,13 @@ use alloc::vec::Vec;
 
 use libretable_cards::{Card, Rank, Suit};
 use libretable_game_core::{
-    Choice, ComponentId, Game, GameId, GameRng, IllegalMove, Observer, Outcome, Pending, Seat,
-    SeatCount, SeatResult, SeatSet, TableModel,
+    Choice, ComponentId, Determinize, Game, GameId, GameRng, IllegalMove, Observer, Outcome,
+    Pending, Seat, SeatCount, SeatResult, SeatSet, TableModel,
 };
 use serde::{Deserialize, Serialize};
 
 pub use config::{Announce, Config, DECK_SIZE, Scoring};
-pub use table::{DISCARD, DRAW_PILE, HandView, View};
+pub use table::{DISCARD, DRAW_PILE, Flow, HandView, View};
 
 /// A card of the match: `deck × 32 + suit × 8 + rank` (ranks seven to ace).
 pub type CardIndex = u8;
@@ -926,6 +926,95 @@ impl Game for MauMau {
             seats,
             teams: Vec::new(),
         })
+    }
+}
+
+impl Determinize for MauMau {
+    /// The cards the seat cannot see (the draw pile, the discards below the
+    /// top, the other hands) are dealt uniformly at random from the cards
+    /// not in its hand and not on top; everything else is in the view. The
+    /// seat remembers nothing, so cards played earlier count as unseen.
+    fn determinize(view: &View, seat: Seat, rng: &mut GameRng) -> State {
+        let mut own: Vec<CardIndex> = view
+            .hands
+            .iter()
+            .find_map(|hand| match hand {
+                HandView::Own(cards) => Some(cards.clone()),
+                HandView::Hidden(_) => None,
+            })
+            .unwrap_or_default();
+        if let Some(drawn) = view.drawn {
+            // The card just drawn is last in hand.
+            if let Some(at) = own.iter().position(|&c| c == drawn) {
+                own.remove(at);
+                own.push(drawn);
+            }
+        }
+        let mut unseen: Vec<CardIndex> = (0..view.config.cards())
+            .filter(|c| *c != view.top && !own.contains(c))
+            .collect();
+        rng.shuffle(&mut unseen);
+        let mut deal = |ids: &[u32]| -> Vec<Slot> {
+            ids.iter()
+                .map(|&id| Slot {
+                    card: unseen.pop().expect("the view's counts match the deck"),
+                    id,
+                })
+                .collect()
+        };
+        let draw = deal(&view.draw);
+        let mut discard = deal(&view.buried);
+        let mut hands: Vec<Vec<Slot>> = view
+            .hands
+            .iter()
+            .map(|hand| match hand {
+                HandView::Hidden(ids) => deal(ids),
+                HandView::Own(_) => Vec::new(),
+            })
+            .collect();
+        discard.push(Slot {
+            card: view.top,
+            id: 0,
+        });
+        let next_id = hands
+            .iter()
+            .flatten()
+            .chain(&draw)
+            .chain(&discard)
+            .map(|slot| slot.id + 1)
+            .max()
+            .unwrap_or(0)
+            .max(FIRST_OPAQUE_ID);
+        let seats = u8::try_from(view.hands.len()).expect("at most 64 seats");
+        let mut state = State {
+            config: view.config.clone(),
+            seats,
+            next_id,
+            draw,
+            discard,
+            hands: Vec::new(),
+            round: view.round,
+            turn: view.turn.unwrap_or(seat),
+            clockwise: view.clockwise,
+            phase: view.phase,
+            penalty: view.penalty,
+            wish: view.wish,
+            called: view.flow.called,
+            played_to_one: view.flow.played_to_one,
+            previous: view.flow.previous,
+            fault: view.flow.fault,
+            call_open: view.flow.call_open,
+            catch_open: view.flow.catch_open,
+            passes: view.flow.passes,
+            turns: view.flow.turns,
+            scores: view.scores.clone(),
+            results: view.results.clone(),
+        };
+        hands[usize::from(seat.index())] =
+            own.into_iter().map(|card| Slot { card, id: 0 }).collect();
+        state.hands = hands;
+        state.reissue(seat);
+        state
     }
 }
 

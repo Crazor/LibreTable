@@ -5,9 +5,9 @@
 //! session.md); the drafts live here, in the transport layer, so every
 //! connection watching a seat sees the same selection.
 
-use libretable_bots::RandomBot;
+use libretable_bots::{IsmctsBot, IsmctsConfig, Player, RandomBot};
 use libretable_game_core::{
-    Choice, Game, GameRng, Observer, Pending, RecordOf, Seat, SeatCount, Seed,
+    Choice, Determinize, Game, GameRng, Observer, Pending, RecordOf, Seat, SeatCount, Seed,
 };
 use libretable_registry::{RegisteredGame, Visitor};
 use libretable_session::{Session, SubmitError, derive_seed};
@@ -87,8 +87,29 @@ impl Visitor for Create<'_> {
     type Output = Result<Box<dyn Hosted>, ServerError>;
 
     fn visit<G: RegisteredGame>(self) -> Self::Output {
-        Match::<G>::new(self).map(|hosted| Box::new(hosted) as Box<dyn Hosted>)
+        Match::<G>::new(self, None).map(|hosted| Box::new(hosted) as Box<dyn Hosted>)
     }
+
+    fn visit_searchable<G: RegisteredGame + Determinize>(self) -> Self::Output {
+        Match::<G>::new(self, Some(ismcts::<G>)).map(|hosted| Box::new(hosted) as Box<dyn Hosted>)
+    }
+}
+
+/// ISMCTS iterations per decision on the server; kept small so a debug
+/// build answers quickly.
+pub const ISMCTS_ITERATIONS: u32 = 300;
+
+/// A seat's search bot.
+type SearchBot<G> = Box<dyn Player<G> + Send>;
+
+fn ismcts<G: Determinize>(seed: Seed) -> SearchBot<G> {
+    Box::new(IsmctsBot::with_config(
+        seed,
+        IsmctsConfig {
+            iterations: ISMCTS_ITERATIONS,
+            ..IsmctsConfig::default()
+        },
+    ))
 }
 
 /// The standard ruleset of the visited game, as JSON.
@@ -107,12 +128,18 @@ struct Match<G: Game> {
     drivers: Vec<Driver>,
     /// Per seat: the choices made so far.
     drafts: Vec<Vec<Choice>>,
-    /// Per seat, used while the seat is driven by a bot.
+    /// Per seat, used while the seat is driven by the random bot.
     bots: Vec<RandomBot>,
+    /// Per seat, used while the seat is driven by the ISMCTS bot; empty for
+    /// games without [`Determinize`].
+    search: Vec<SearchBot<G>>,
 }
 
 impl<G: RegisteredGame> Match<G> {
-    fn new(create: Create<'_>) -> Result<Self, ServerError> {
+    fn new(
+        create: Create<'_>,
+        search: Option<fn(Seed) -> SearchBot<G>>,
+    ) -> Result<Self, ServerError> {
         let config: G::Config = match create.variant {
             None => G::Config::default(),
             Some(json) => serde_json::from_value(json.clone()).map_err(|error| {
@@ -131,6 +158,13 @@ impl<G: RegisteredGame> Match<G> {
         let bots = (0..count)
             .map(|_| RandomBot::new(derive_seed(&mut master)))
             .collect();
+        let search: Vec<SearchBot<G>> = match search {
+            Some(make) => (0..count).map(|_| make(derive_seed(&mut master))).collect(),
+            None => Vec::new(),
+        };
+        if search.is_empty() && create.drivers.contains(&Driver::Ismcts) {
+            return Err(ServerError::new("server-error-no-ismcts"));
+        }
         let session =
             Session::<G>::new(config, create.seats, match_seed, create.build).map_err(|error| {
                 ServerError::new("server-error-invalid-variant").reason(error.reason)
@@ -140,6 +174,7 @@ impl<G: RegisteredGame> Match<G> {
             drivers: create.drivers,
             drafts: vec![Vec::new(); count],
             bots,
+            search,
         };
         hosted.run_bots()?;
         Ok(hosted)
@@ -153,7 +188,7 @@ impl<G: RegisteredGame> Match<G> {
 
     fn human(&self, index: u8) -> Result<Seat, ServerError> {
         let seat = self.seat(index)?;
-        if self.drivers[usize::from(index)] == Driver::Bot {
+        if self.drivers[usize::from(index)].is_bot() {
             return Err(ServerError::new("server-error-seat-is-bot").arg("seat", index));
         }
         Ok(seat)
@@ -166,11 +201,15 @@ impl<G: RegisteredGame> Match<G> {
             let pending = self.session.pending().seats();
             let Some(seat) = pending
                 .iter()
-                .find(|seat| self.drivers[usize::from(seat.index())] == Driver::Bot)
+                .find(|seat| self.drivers[usize::from(seat.index())].is_bot())
             else {
                 break;
             };
-            let bot = &mut self.bots[usize::from(seat.index())];
+            let index = usize::from(seat.index());
+            let bot: &mut dyn Player<G> = match self.drivers[index] {
+                Driver::Ismcts => self.search[index].as_mut(),
+                _ => &mut self.bots[index],
+            };
             let events = self.session.play(seat, bot).map_err(rejected)?;
             moved.push(self.moved(seat, &events));
         }
@@ -347,8 +386,11 @@ impl<G: RegisteredGame> Hosted for Match<G> {
     fn set_driver(&mut self, seat: u8, driver: Driver) -> Result<Vec<Moved>, ServerError> {
         let seat = self.seat(seat)?;
         let index = usize::from(seat.index());
+        if driver == Driver::Ismcts && self.search.is_empty() {
+            return Err(ServerError::new("server-error-no-ismcts"));
+        }
         self.drivers[index] = driver;
-        if driver == Driver::Bot {
+        if driver.is_bot() {
             self.drafts[index].clear();
         }
         self.run_bots()

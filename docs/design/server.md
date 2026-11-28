@@ -20,7 +20,7 @@ The page: pick a game, the number of seats, an optional seed and the variant (JS
 | --- | --- |
 | `protocol` | Wire types (public): `ClientMessage`, `ServerMessage`, `encode`, `decode`. |
 | `connection` | `Server` (all matches, kept until the process ends) and `Connection` (one client: its match, observers and log position). No networking, so tests drive it directly. |
-| `hosted` | One match with its game type erased: the session, seat drivers, each human seat's draft and one `RandomBot` per seat. |
+| `hosted` | One match with its game type erased: the session, seat drivers, each human seat's draft, and per seat one `RandomBot` and, for searchable games, one `IsmctsBot` (300 iterations). |
 | `web` | axum routes: `/` (page), `/app.js`, `/style.css`, `/ws`. |
 | `main.rs` | Command line and start-up. |
 
@@ -42,14 +42,14 @@ Every frame is a JSON object `{"v": 1, "type": "…", …}`. Field names are keb
 | `choose` | `seat`, `choice` | Adds a choice to the seat's draft; it must be selectable. |
 | `undo` | `seat` | Drops the draft's last choice. |
 | `submit` | `seat` | Applies the draft once complete; bots then act. |
-| `set-driver` | `seat`, `driver` | `"human"` or `"bot"`. A bot seat that must act plays at once; its draft is dropped. |
+| `set-driver` | `seat`, `driver` | `"human"`, `"bot"` (random) or `"ismcts"` (games with `ismcts` in `welcome.games` only, else `server-error-no-ismcts`). A bot seat that must act plays at once; its draft is dropped. |
 | `seek` | `position?` | Shows the match after `position` moves (`0` … `length`); without it, follows live. |
 
 ### Server → client
 
 | Type | Fields |
 | --- | --- |
-| `welcome` | `protocol`, `build`, `dev`, `locale`, `locales`, `games` (`id`, default `variant`), `messages` |
+| `welcome` | `protocol`, `build`, `dev`, `locale`, `locales`, `games` (`id`, default `variant`, `ismcts`: whether the ISMCTS bot can drive seats), `messages` |
 | `joined` | `match`, `game`, `seats`, `observers`, `seed` (dev only) |
 | `state` | `match`, `position`, `length`, `live`, `pending` (`kind`: `all` / `any` / `finished`, `seats`), `drivers`, `views` (`observer`, `table`), `prompts` (`seat`, `made`, `selectable`, `complete`), `log` (`seat`, `choices` if observed), `outcome?` (`seats`: `rank`, `score`; `teams`), `record` (dev only) |
 | `events` | `match`, `position`, `seat`, `events` (the game's events as JSON; dev only) |
@@ -63,7 +63,7 @@ Every frame is a JSON object `{"v": 1, "type": "…", …}`. Field names are keb
 
 ### Errors
 
-`code` is a message ID from `locales/*/server.ftl`: `server-error-protocol-version`, `-bad-message`, `-unknown-game`, `-bad-seats`, `-drivers`, `-variant-json`, `-invalid-variant`, `-unknown-match`, `-no-match`, `-bad-seat`, `-seat-is-bot`, `-not-pending`, `-not-selectable`, `-incomplete`, `-ambiguous`, `-illegal`, `-bad-position`, `-omniscient-unavailable`, `-internal`. `args` are its arguments as text. `reason`, when present, is a game's message ID (an invalid variant or illegal move); the client formats it and passes it as the `reason` argument.
+`code` is a message ID from `locales/*/server.ftl`: `server-error-protocol-version`, `-bad-message`, `-unknown-game`, `-bad-seats`, `-drivers`, `-variant-json`, `-invalid-variant`, `-unknown-match`, `-no-match`, `-bad-seat`, `-seat-is-bot`, `-no-ismcts`, `-not-pending`, `-not-selectable`, `-incomplete`, `-ambiguous`, `-illegal`, `-bad-position`, `-omniscient-unavailable`, `-internal`. `args` are its arguments as text. `reason`, when present, is a game's message ID (an invalid variant or illegal move); the client formats it and passes it as the `reason` argument.
 
 ## The `dev` feature
 

@@ -21,7 +21,7 @@ mod seat;
 mod selection;
 mod table;
 
-pub use game::{Game, GameId, IllegalMove, InvalidVariant, Variant};
+pub use game::{Determinize, Game, GameId, IllegalMove, InvalidVariant, Variant};
 pub use outcome::{Outcome, SeatResult};
 pub use pending::Pending;
 pub use record::{GameRecord, RECORD_SCHEMA_VERSION, RecordOf, RecordedMove, ReplayError, replay};

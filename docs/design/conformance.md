@@ -22,6 +22,7 @@ Checks at every decision point (also before each chance step) and at the end:
 | Determinism | Replaying the record, before and after its JSON round trip, reaches the identical state and generator. |
 | Leak | A seat's view is identical in every declared hidden variant. Opaque IDs are reissued: per observer (every seat and the spectator), a component ID once shown face up is never face down later, and a face-down ID never shows up face down in another zone. This catches a card covered on a pile under its known ID and hidden cards moved or reshuffled into another zone without fresh IDs. |
 | Table | Every seat's and the spectator's table model passes `check_table`: unique zone and component IDs, no face shown in a hidden zone or in another seat's owner-only zone. |
+| Determinization | For games with `Determinize` (`Suite::determinize`, built by `determinizer::<G>()`): at every decision point, each pending seat's view determinizes to a state with the same view for that seat, the same pending seats and the same legal moves. |
 | Selection | `check_selection` for every seat: choice paths are unique and prefix-free, name only things on the seat's table, reach every legal move and each reached move applies. |
 | Messages | Before any match: `message_ids` is well-formed (kebab-case), duplicate-free and holds the game ID. During matches: every zone and indicator label, message indicator value, face key of a face-up component, option choice of a legal move and reason of a rejected move is in `message_ids`. |
 

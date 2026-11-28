@@ -6,8 +6,10 @@
 //! so it cannot use hidden information, and the session never builds a
 //! decision from `Observer::Omniscient`.
 //!
-//! [`RandomBot`] picks a legal move uniformly at random. The ISMCTS bot
-//! (milestone 1, issue 9) will implement the same trait.
+//! [`RandomBot`] picks a legal move uniformly at random. [`IsmctsBot`]
+//! searches with Information Set Monte Carlo Tree Search over
+//! determinizations of its view, for games that implement
+//! [`Determinize`](libretable_game_core::Determinize).
 //!
 //! The crate is `no_std`: bots use no I/O, clock, threads or global
 //! randomness; a bot's randomness comes from its own [`GameRng`].
@@ -16,6 +18,12 @@
 #![forbid(unsafe_code)]
 
 extern crate alloc;
+#[cfg(test)]
+extern crate std;
+
+mod ismcts;
+
+pub use ismcts::{IsmctsBot, IsmctsConfig, MoveStats};
 
 use alloc::vec::Vec;
 

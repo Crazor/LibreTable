@@ -90,6 +90,13 @@ fn client_messages() {
         &json!({"v": 1, "type": "set-driver", "seat": 1, "driver": "bot"}),
     );
     round_trip_client(
+        &ClientMessage::SetDriver {
+            seat: 0,
+            driver: Driver::Ismcts,
+        },
+        &json!({"v": 1, "type": "set-driver", "seat": 0, "driver": "ismcts"}),
+    );
+    round_trip_client(
         &ClientMessage::Seek { position: Some(4) },
         &json!({"v": 1, "type": "seek", "position": 4}),
     );
@@ -130,13 +137,14 @@ fn server_messages() {
             games: vec![GameInfo {
                 id: "rock-paper-scissors".to_owned(),
                 variant: json!({"rounds": 3}),
+                ismcts: true,
             }],
             messages: BTreeMap::from([("rps-rock".to_owned(), "Rock".to_owned())]),
         },
         &json!({
             "v": 1, "type": "welcome", "protocol": 1, "build": "b", "dev": false,
             "locale": "en", "locales": ["en", "de"],
-            "games": [{"id": "rock-paper-scissors", "variant": {"rounds": 3}}],
+            "games": [{"id": "rock-paper-scissors", "variant": {"rounds": 3}, "ismcts": true}],
             "messages": {"rps-rock": "Rock"},
         }),
     );

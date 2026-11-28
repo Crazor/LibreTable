@@ -23,6 +23,9 @@
 //! - **Table:** every seat's and the spectator's table model has unique zone
 //!   and component IDs and shows no face where its observer may
 //!   not look ([`check_table`]).
+//! - **Determinization** (games with [`Determinize`]): the state a pending
+//!   seat's view determinizes to has that same view for the seat, the same
+//!   pending seats and the same legal moves for it.
 //! - **Selection protocol:** for every seat, every legal move is reachable
 //!   through choices and no choice path leads to an illegal move
 //!   ([`check_selection`]).
@@ -40,8 +43,9 @@ use std::collections::BTreeMap;
 use std::fmt;
 
 use libretable_game_core::{
-    Choice, ComponentId, Face, Game, GameRecord, GameRng, IndicatorValue, Observer, Pending,
-    RecordOf, Seat, SeatCount, Seed, Variant, ZoneId, check_selection, check_table, replay,
+    Choice, ComponentId, Determinize, Face, Game, GameRecord, GameRng, IndicatorValue, Observer,
+    Pending, RecordOf, Seat, SeatCount, Seed, Variant, ZoneId, check_selection, check_table,
+    replay,
 };
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -81,6 +85,18 @@ pub struct Suite<G: Game> {
     /// such as [`InvalidVariant`](libretable_game_core::InvalidVariant)
     /// reasons, must be listed too.
     pub message_ids: &'static [&'static str],
+    /// The game's [`Determinize::determinize`], if it implements it
+    /// ([`determinizer`] builds the value); `None` skips the check.
+    pub determinize: Option<Determinizer<G>>,
+}
+
+/// See [`Suite::determinize`].
+pub type Determinizer<G> = fn(&<G as Game>::View, Seat, &mut GameRng) -> <G as Game>::State;
+
+/// [`Suite::determinize`] for a game that implements [`Determinize`].
+#[must_use]
+pub fn determinizer<G: Determinize>() -> Option<Determinizer<G>> {
+    Some(G::determinize)
 }
 
 /// See [`Suite::hidden_variants`].
@@ -106,6 +122,8 @@ pub enum Check {
     Table,
     /// Choice paths do not select exactly the legal moves.
     Selection,
+    /// A determinized state does not match the view it came from.
+    Determinize,
     /// The game emits a message ID missing from [`Suite::message_ids`], or
     /// that list is malformed.
     Messages,
@@ -388,6 +406,7 @@ impl<G: Game> Match<'_, G> {
         }
 
         self.check_state(state)?;
+        self.check_determinize(state, pending)?;
         // After legality and the table, so those failures are reported as
         // such rather than as a selection failure.
         for seat in seats.seats() {
@@ -400,6 +419,37 @@ impl<G: Game> Match<'_, G> {
         }
         self.check_options(state, &legal)?;
         Ok(legal)
+    }
+
+    /// Every pending seat's view determinizes to a state with the same view,
+    /// the same pending seats and the same legal moves for that seat.
+    fn check_determinize(&mut self, state: &G::State, pending: Pending) -> Result<(), Failure> {
+        let Some(determinize) = self.suite.determinize else {
+            return Ok(());
+        };
+        for seat in pending.seats().iter() {
+            let view = G::view(state, Observer::Seat(seat));
+            let sampled = determinize(&view, seat, &mut self.driver);
+            let again = G::view(&sampled, Observer::Seat(seat));
+            let problem = if again != view {
+                Some(format!(
+                    "view of {seat:?} differs:\nreal {view:?}\nsampled {again:?}"
+                ))
+            } else if G::pending(&sampled) != pending {
+                Some(format!(
+                    "pending {:?} instead of {pending:?}",
+                    G::pending(&sampled)
+                ))
+            } else if G::legal_moves(&sampled, seat) != G::legal_moves(state, seat) {
+                Some(format!("legal moves of {seat:?} differ"))
+            } else {
+                None
+            };
+            if let Some(problem) = problem {
+                return Err(self.fail(Check::Determinize, problem));
+            }
+        }
+        Ok(())
     }
 
     /// Every option choice of every legal move is a declared message ID.

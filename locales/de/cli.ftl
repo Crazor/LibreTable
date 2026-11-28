@@ -6,12 +6,12 @@ cli-usage =
     Aufruf:
     table [--lang <sprache>] games
     {"    "}Listet die Spiele.
-    table [--lang <sprache>] play <spiel> [--seats human,bot,...] [--seed <n>] [--variant <json>] [--record <datei>]
-    {"    "}Spielt eine Partie im Terminal. Jeder Platz ist human (Mensch) oder bot (Standard: human,bot).
+    table [--lang <sprache>] play <spiel> [--seats human,bot,ismcts,...] [--seed <n>] [--variant <json>] [--record <datei>] [--iterations <n>]
+    {"    "}Spielt eine Partie im Terminal. Jeder Platz ist human (Mensch), bot (Zufall) oder ismcts (Suchbot; Standard: human,bot).
     table [--lang <sprache>] replay <partie.json> [--seat <n>] [--each]
     {"    "}Spielt eine aufgezeichnete Partie nach und zeigt den Tisch eines Platzes (Standard: Zuschauer).
-    table [--lang <sprache>] simulate <spiel> [-n <partien>] [--seats <anzahl>] [--seed <n>] [--variant <json>]
-    {"    "}Lässt Zufallsbots gegeneinander spielen und fasst die Ergebnisse zusammen.
+    table [--lang <sprache>] simulate <spiel> [-n <partien>] [--seats <anzahl> | --bots bot,ismcts,...] [--seed <n>] [--variant <json>] [--iterations <n>]
+    {"    "}Lässt Bots gegeneinander spielen (Zufallsbots, wenn --bots nichts anderes sagt) und fasst die Ergebnisse zusammen.
     table help
     {"    "}Zeigt diese Hilfe.
     Ohne --lang kommt die Sprache aus LC_ALL, LC_MESSAGES oder LANG, sonst Englisch.
@@ -27,7 +27,9 @@ cli-error-unknown-option = Unbekannte Option „{ $option }“.
 cli-error-option-value = Die Option { $option } braucht einen Wert.
 cli-error-bad-number = { $option }: „{ $value }“ ist keine gültige Zahl.
 cli-error-unknown-game = Unbekanntes Spiel „{ $game }“. „table games“ zeigt die Liste.
-cli-error-seat-kind = Unbekannte Platzart „{ $kind }“; erlaubt sind human und bot.
+cli-error-seat-kind = Unbekannte Platzart „{ $kind }“; erlaubt sind human, bot und ismcts.
+cli-error-bot-kind = „{ $kind }“ ist kein Bot; erlaubt sind bot und ismcts.
+cli-error-no-ismcts = { $game } hat keinen ISMCTS-Bot.
 cli-error-seat-range = Platz { $seat } gehört nicht zu dieser Partie.
 cli-error-seat-count = Eine Partie braucht 1 bis 64 Plätze, nicht { $count }.
 cli-error-variant-json = Die Variante passt nicht zu diesem Spiel: { $reason }
@@ -56,6 +58,7 @@ cli-play-header =
     }, Startwert { $seed }.
 cli-seat-human = Platz { $seat }: Mensch
 cli-seat-bot = Platz { $seat }: Bot
+cli-seat-ismcts = Platz { $seat }: ISMCTS-Bot
 cli-prompt = Platz { $seat }, wähle:
 cli-prompt-item = { $number }) { $choice }
 cli-prompt-made = Bisher gewählt: { $choices }

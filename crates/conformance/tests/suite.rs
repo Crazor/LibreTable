@@ -271,6 +271,7 @@ fn counter_suite(bug: Option<Bug>) -> Suite<Counter> {
             "counter-illegal",
             "counter-zone",
         ],
+        determinize: None,
     }
 }
 
@@ -350,4 +351,11 @@ fn a_malformed_message_list_fails_before_any_match() {
         assert_eq!(failure.check, Check::Messages, "{ids:?}");
         assert!(failure.record.is_empty(), "{ids:?}");
     }
+}
+
+#[test]
+fn a_determinizer_that_ignores_the_view_is_caught() {
+    let mut suite = rock_paper_scissors::suite(5, Seed::from_u64(1));
+    suite.determinize = Some(|_, _, rng| Rps::setup(&Default::default(), seats(2), rng));
+    assert_eq!(check(run(&suite)), Check::Determinize);
 }
