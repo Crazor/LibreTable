@@ -4,7 +4,7 @@ description = "WebSocket server hosting matches; first the dev server for the we
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-# The server alone is AGPL-3.0-or-later (ADR-0002).
+# The server alone is AGPL-3.0-or-later (docs/policies.md).
 license = "AGPL-3.0-or-later"
 publish.workspace = true
 

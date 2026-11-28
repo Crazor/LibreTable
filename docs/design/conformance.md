@@ -27,7 +27,7 @@ Checks at every decision point (also before each chance step) and at the end:
 
 A `Failure` names the check, explains it and carries the partial record as JSON (empty for a malformed `message_ids`, found before any match), so the failing match replays in the CLI (`table replay`, see [cli](cli.md)).
 
-Not checked yet: the binary wire encoding (once ADR-0003 is accepted), opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
+Not checked yet: the binary wire encoding, opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
 
 Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 seats × 100 matches) and shows each check catching a deliberately broken game.
 

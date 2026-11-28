@@ -1,5 +1,4 @@
-//! The WebSocket wire format, version [`PROTOCOL_VERSION`] (ADR-0010,
-//! docs/design/server.md).
+//! The WebSocket wire format, version [`PROTOCOL_VERSION`] (docs/design/server.md).
 //!
 //! Every message is one JSON text frame: an object with the protocol version
 //! `v`, a kebab-case `type` and the message's fields. Clients send

@@ -1,10 +1,10 @@
 # Architecture
 
-This document describes the stable architecture: principles, layers and core concepts. Details of individual components live in [design/](design/); every change to a principle, a public interface or the wire format needs an [ADR](adr/).
+This document describes the stable architecture: principles, layers and core concepts. Details of individual components, the decisions behind them and their open points live in [design/](design/).
 
 ## Guiding principles
 
-These principles are binding; a change to any of them needs an ADR.
+These principles are binding.
 
 1. **Deterministic core.** Given a seed and a move list, a game always reaches the same state. No clock, no I/O, no global randomness, no threads inside game logic.
 2. **Views, not state.** Nothing outside the core ever sees the full state, except the omniscient debug view in local development builds. Bots, clients and transports receive views.
@@ -42,7 +42,7 @@ The session runs a match locally or forwards it through a transport; the server 
 
 ## Game core: the `Game` trait
 
-Every game is a pure state machine behind one trait. The sketch fixes the shape; exact names are settled in [ADR-0001](adr/0001-game-interface.md).
+Every game is a pure state machine behind one trait. The sketch fixes the shape; exact names are in [design/game-core.md](design/game-core.md).
 
 ```rust
 pub trait Game {
@@ -81,7 +81,7 @@ pub trait Game {
 - **Chance** is explicit. All randomness flows through `GameRng`, a seeded, versioned PRNG (ChaCha12, see [design/game-core.md](design/game-core.md)) owned by the session, so a game is fully defined by config, seed and move list.
 - **Events** describe what happened (card moved, revealed, shuffled, trick won). Renderers animate from them; logs and replays read them.
 - **Teams and partnerships** (Canasta, Doppelkopf, Bridge, Skat's declarer vs. defenders) are part of `Outcome` and of the view rules from the start; partners still see only their own hands.
-- **Large move spaces.** `legal_moves` cannot always be a full list (numeric choices, any free node, rearranging all melds in tile rummy). The core also offers lazy enumeration and validation of a submitted draft (open point in ADR-0001).
+- **Large move spaces.** `legal_moves` cannot always be a full list (numeric choices, any free node, rearranging all melds in tile rummy). The core also offers lazy enumeration and validation of a submitted draft (open point in [design/game-core.md](design/game-core.md#open-points)).
 - **History in the state** where rules need it (repetition draws, last-round triggers).
 - **No dependencies** beyond `core`/`alloc` plus `serde` in the core crate, so it compiles to native, Wasm and mobile targets unchanged.
 
@@ -182,7 +182,7 @@ A **session** runs one match: it owns the state, the RNG and the seats, and talk
 The server is a Rust service (e.g. axum on tokio) that links the same game crates as the clients and is the single source of truth for server matches.
 
 - **Responsibilities:** match lifecycle, shuffling and chance, per-seat views, bot seats, reconnection, spectators, client build check, arrival order for real-time games.
-- **Protocol:** WebSocket with a versioned, language-neutral schema (moves, views, events, presence). Any client in any language can play. Version 1 (JSON) is [ADR-0010](adr/0010-websocket-protocol.md).
+- **Protocol:** WebSocket with a versioned, language-neutral schema (moves, views, events, presence). Any client in any language can play. Version 1 (JSON) is described in [design/server.md](design/server.md).
 - **Starts small:** the dev server used by the web debug client in the core stage grows into this service. First public version = rooms joined by code, no accounts.
 - **Later:** accounts (Sign in with Apple, passkeys), friends, lobby, matchmaking, ratings, tournaments, server-side deep analysis.
 - **Cost discipline:** bots run on devices by default; server-side bots only for server matches.
@@ -255,7 +255,7 @@ English is the source language and German the first translation; full screen-rea
   apple/            SwiftUI app (macOS, iPadOS, iOS)
   web/dev/          dev multiclient page, served by the dev server
   web/              later the web client
-/docs               vision, architecture, design/, adr/, games/<game>/rules.md
+/docs               vision, architecture, design/, games/<game>/rules.md
 /locales            en (source), de, ...
 ```
 

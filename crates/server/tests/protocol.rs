@@ -1,5 +1,5 @@
 //! The wire format: exact JSON of each message kind and lossless round
-//! trips (ADR-0010).
+//! trips (docs/design/server.md).
 
 use std::collections::BTreeMap;
 

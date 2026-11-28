@@ -71,10 +71,17 @@ Three features set the platform apart and follow almost directly from the archit
 
 ## Licensing & funding
 
-All code is open; the brand is protected; money comes from donations first, and only server features that cost money are ever paid. Licences are decided in [ADR-0002](adr/0002-licences.md).
+All code is open; the brand is protected; money comes from donations first, and only server features that cost money are ever paid. Licences are set out in [policies](policies.md#licences).
 
 - Donations with a public cost sheet, as Lichess does.
 - Free App Store app with an optional tip in-app purchase.
 - Later, a supporter subscription for server-side features only (deep analysis, tournaments, long archives). Games, bots and on-device analysis stay free forever.
 - Paid modules only for licensed publisher games, where licence fees apply anyway.
 - Cost discipline: bots run on devices by default, so the server mostly relays and validates.
+
+## Open decisions
+
+- **Table renderer on Apple platforms:** SwiftUI alone, or SpriteKit/Canvas for the table surface with SwiftUI for the chrome. Decided after an animation spike at the start of the Mac stage (full Rommé table, a dice roll; criteria: frame rate, accessibility support, code size). The table model stays renderer-agnostic either way.
+- **Game Center tier:** a thin transport for friends in the Mac stage; competitive and public play use the own server. Open: whether the web-stage server makes Game Center unnecessary in practice.
+- **Non-profit association and accessibility partners:** some funders (e.g. Aktion Mensch) and Apple's developer fee waiver require a non-profit; screen-reader play needs testing with blind and visually impaired players. Evaluate in 2027: a registered association with a real board, or a partner organization (e.g. a regional association of the blind) as applicant and test partner. Tax-privileged purposes would rest on help for people with disabilities, education and care for the elderly (tax adviser to check); Apple's fee waiver reportedly excludes in-app purchases, which conflicts with the tip model (to verify).
+- **Project name:** see [policies](policies.md#project-name).

@@ -1,6 +1,6 @@
 # server
 
-The `libretable-server` crate (AGPL-3.0-or-later, [ADR-0002](../adr/0002-licences.md)) builds the binary `table-server`: a WebSocket server that hosts matches through [`Session`](session.md) and serves the web dev multiclient ([ADR-0005](../adr/0005-web-dev-client.md)). It is the seed of the real server ([architecture: server](../architecture.md#server)). The wire format is [ADR-0010](../adr/0010-websocket-protocol.md).
+The `libretable-server` crate (AGPL-3.0-or-later, see [policies](../policies.md#licences)) builds the binary `table-server`: a WebSocket server that hosts matches through [`Session`](session.md) and serves the web dev multiclient. It is the seed of the real server ([architecture: server](../architecture.md#server)). The wire format is protocol v1, below.
 
 ## Running it
 
@@ -80,4 +80,21 @@ All page text and every error are message IDs in `locales/*/server.ftl` (`server
 - `tests/dev_gate.rs`: with and without `dev`.
 - `tests/websocket.rs`: a real server on `127.0.0.1:0`: page and assets over HTTP, a whole rock-paper-scissors match over `/ws` with two clients, the omniscient gate. Binding a port can be refused inside a sandbox (EPERM); run it outside then.
 
-Not yet: authentication and seat ownership, reconnection, persistence, per-observer events, the binary encoding, client build checks (open points of ADR-0010).
+Not yet: reconnection and persistence; see [open points](#open-points).
+
+## Design notes
+
+- **Dev server first, Wasm later.** The dev server is the seed of the real server and exercises the WebSocket protocol from the first milestone; Wasm comes in the web stage for offline play and on-device bots.
+- **Plain HTML, CSS and JavaScript, no framework and no build step.** The page only renders what the server sends and forwards choices, so a framework would add tooling without removing much code; no Node.js toolchain in the repository or CI. The public web client decides its own tooling.
+- **Text is never prose** on the wire: labels, options, reasons and error codes are message IDs, formatted by the server for the client's locale.
+- **State, not deltas:** simple and robust, but grows with long logs.
+- **Versioning:** every change to message shapes bumps the protocol version and updates this document; `tests/protocol.rs` pins the JSON of every message kind.
+
+## Open points
+
+- Authentication and seat ownership: in v1 any connection may drive and watch any seat. The public server needs seat claims, reconnection tokens and per-seat views only.
+- Per-observer events, so `events` can leave the dev build.
+- The binary encoding ([game-core.md](game-core.md#encoding)) as a second encoding, negotiated in `hello`.
+- Client build check and compatibility window ([architecture: saves, replays & updates](../architecture.md#saves-replays--updates)).
+- Whether clients should format plural messages themselves (shipping Fluent to the client) instead of avoiding selectors.
+- Deltas instead of full states, presence and spectator delay.

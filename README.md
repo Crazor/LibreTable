@@ -1,6 +1,6 @@
 # LibreTable
 
-> Working name. The final project name is decided in [ADR-0008](docs/adr/0008-project-name.md).
+> Working name. The final project name is still open (see [docs/policies.md](docs/policies.md#project-name)).
 
 An open-source platform for turn-based card, dice and board games: implement a game once, play it everywhere — natively on Apple platforms, in the browser and later elsewhere, online with friends and against AI players that can also coach you.
 
@@ -34,18 +34,17 @@ See [docs/design/server.md](docs/design/server.md); without `--features dev` the
 | [docs/vision.md](docs/vision.md) | Purpose, goals, roadmap, game selection, differentiating features, licensing and funding |
 | [docs/architecture.md](docs/architecture.md) | Principles, layers and core concepts |
 | [docs/design/](docs/design/) | Detailed design per component (grows with the code) |
-| [docs/adr/](docs/adr/) | Architecture decision records |
 | [docs/games/](docs/games/) | Rules specification per game |
 | [docs/reference-games.md](docs/reference-games.md) | What well-known games demand from the engine |
 | [docs/policies.md](docs/policies.md) | Privacy, legal and App Store constraints |
 
 ## Contributing
 
-Every commit must carry a [Developer Certificate of Origin](https://developercert.org/) sign-off matching its author, which keeps relicensing options open ([ADR-0002](docs/adr/0002-licences.md)). Sign off with `git commit -s`; fix an existing branch with `git rebase --signoff main`. CI rejects pull requests with unsigned commits; run `scripts/check-dco.sh main..HEAD` to check locally.
+Every commit must carry a [Developer Certificate of Origin](https://developercert.org/) sign-off matching its author, which keeps relicensing options open ([licences](docs/policies.md#licences)). Sign off with `git commit -s`; fix an existing branch with `git rebase --signoff main`. CI rejects pull requests with unsigned commits; run `scripts/check-dco.sh main..HEAD` to check locally.
 
 ## Licence
 
-See [ADR-0002](docs/adr/0002-licences.md) (legal review pending before the first public release):
+See [docs/policies.md](docs/policies.md#licences) (legal review pending before the first public release):
 
 | Part | Licence | Text |
 | --- | --- | --- |

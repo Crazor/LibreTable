@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 // Dev multiclient: a thin client of the dev server's WebSocket protocol v1
-// (docs/adr/0010-websocket-protocol.md, docs/design/server.md). It renders
+// (docs/design/server.md). It renders
 // the table models and prompts the server sends and forwards choices; it
-// never builds moves itself. Plain JavaScript, no build step (ADR-0005).
+// never builds moves itself. Plain JavaScript, no build step.
 'use strict';
 
 const PROTOCOL = 1;

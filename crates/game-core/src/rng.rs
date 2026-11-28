@@ -19,8 +19,8 @@
 //!   down to 1, swap item `i` with item `below(i + 1)`.
 //!
 //! The same seed gives the same sequence on every platform. Any change to the
-//! steps above changes every replay, so it requires an ADR and a new
-//! [`GameRng::ALGORITHM`] name. ChaCha is used instead of a smaller PRNG so
+//! steps above changes every replay, so it requires a deliberate decision
+//! and a new [`GameRng::ALGORITHM`] name. ChaCha is used instead of a smaller PRNG so
 //! that players cannot reconstruct the generator from the cards they see and
 //! predict future draws.
 

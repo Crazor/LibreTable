@@ -18,7 +18,7 @@ use std::path::PathBuf;
 
 use commands::{PlayOptions, ReplayOptions, SeatKind, SimulateOptions};
 
-/// Build ID written into records (ADR-0004): the `BUILD_ID` environment
+/// Build ID written into records: the `BUILD_ID` environment
 /// variable at compile time (CI sets the git commit), else the crate version.
 pub const BUILD: &str = match option_env!("BUILD_ID") {
     Some(build) => build,
