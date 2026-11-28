@@ -10,9 +10,9 @@ Goal: one card game (Mau-Mau) runs end to end through every core layer — rules
 | 4 | Conformance suite skeleton | Generic harness running N random games per game; checks determinism, legality, termination, round trips; green for rock-paper-scissors; leak test scaffolded |
 | 5 | Selection protocol and table model v0 | Choice protocol and table model types; conformance check "every legal move reachable through choices, no choice path illegal" |
 | 6 | CLI runner and text renderer | Play a game in the terminal (human or bot seats), replay a JSON record, simulate N games; text renderer shows a seat's table model and selectable items |
-| 7 | Mau-Mau rules spec | `docs/games/mau-mau/rules.md`: standard rules plus typed house-rule options; signed off by the architect |
-| 8 | Mau-Mau implementation | Crate `games/mau-mau`; passes conformance incl. leak test and opaque-ID reissue on reshuffle; rule tests from the spec; three golden replays |
-| 9 | ISMCTS bot | Generic over `Game`; samples determinizations from the bot's view only; beats random play in Mau-Mau with statistical significance; playout benchmark |
+| 7 | Mau-Mau rules spec ([#24](https://github.com/Crazor/LibreTable/issues/24)) | `docs/games/mau-mau/rules.md`: standard rules plus typed house-rule options; signed off by the architect |
+| 8 | Mau-Mau implementation ([#25](https://github.com/Crazor/LibreTable/issues/25)) | Crate `games/mau-mau`; passes conformance incl. leak test and opaque-ID reissue on reshuffle; rule tests from the spec; three golden replays |
+| 9 | ISMCTS bot ([#26](https://github.com/Crazor/LibreTable/issues/26)) | Generic over `Game`; samples determinizations from the bot's view only; beats random play in Mau-Mau with statistical significance; playout benchmark |
 | 10 | Dev server and web multiclient ([#7](https://github.com/Crazor/LibreTable/issues/7)) | Local WebSocket dev server running sessions; browser page with several seat views side by side, omniscient view (dev feature only), move log stepping; seats driven by hand or bot. Protocol: [design/server.md](../design/server.md); runs rock-paper-scissors until Mau-Mau exists |
 | 11 | Localization scaffold ([#12](https://github.com/Crazor/LibreTable/issues/12)) | `/locales/en` and `/locales/de` Fluent files, one per crate or game; loader crate `l10n` outside the deterministic crates; CI fails on keys missing in `de` or IDs without an `en` message; lands before or with 6, which shows the first user-facing text |
 

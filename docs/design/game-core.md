@@ -80,6 +80,7 @@ Confirmed by the architect while implementing milestone 1:
 - **`table(view)`** builds the table model from a view, never from the state, so it cannot leak.
 - **Choice paths are unique and prefix-free** per seat and point. "Play Jack" and "play Jack, wish Hearts" can therefore not both be legal at once; a game adds an explicit option (e.g. "no wish") instead. A subset is one choice carrying a canonical set.
 - **Games never match on `Observer`.** `Omniscient` exists only with the `dev` feature, and Cargo feature unification can enable it for a game crate that did not ask for it, so a `#[cfg(feature = "dev")]` arm inside a game would not compile, while a wildcard arm would fail open. Games use `seat()`, `sees_private_of(owner)` and `sees_all()`; only game-core matches on the variants.
+- **Optional announcements are separate moves.** An announcement such as Mau-Mau's "last card" is a move of its own with a one-option path, offered whether or not it matters, never a suffix of a card play. No "no announcement" option is needed, card paths stay as they are, and the offer gives nothing away ([Mau-Mau rules](../games/mau-mau/rules.md#last-card-announcement)).
 - Interfaces are validated against Mau-Mau, Rommé, Connect Four and rock-paper-scissors, and requirements from the [reference games](../reference-games.md) must stay expressible without breaking changes.
 
 ## Open points
@@ -89,5 +90,4 @@ Confirmed by the architect while implementing milestone 1:
 - Where per-game history (repetition) lives and how it is hashed.
 - Typed board graphs (locations, adjacency, per-player paths), layout hints and custom-widget slots in the table model.
 - Turns made of several groups (Rommé's first lay-down of several melds): staged moves with a closing option, or draft submission.
-- Optional announcements ("Mau") under prefix-free paths: an explicit "no announcement" option or a separate move; settled in the Mau-Mau rules spec.
 - The exact shape of `Outcome` for teams, eliminations and multi-round scoring (Doppelkopf, Rommé penalty points, elimination games).
