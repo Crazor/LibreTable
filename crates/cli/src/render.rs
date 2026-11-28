@@ -200,7 +200,7 @@ fn component(item: &Component) -> String {
                 "cli-component-shown",
                 id = item.id.0,
                 kind = kind,
-                key = key
+                name = tr!(key)
             )
         }
         Face::Shown { key, attributes } => {
@@ -218,7 +218,7 @@ fn component(item: &Component) -> String {
                 "cli-component-shown-attributes",
                 id = item.id.0,
                 kind = kind,
-                key = key,
+                name = tr!(key),
                 attributes = attributes.join(", ")
             )
         }

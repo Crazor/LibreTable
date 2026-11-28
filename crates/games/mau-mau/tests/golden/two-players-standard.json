@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "game": "mau-mau",
+  "build": "golden",
+  "variant": {
+    "decks": 1,
+    "hand_size": 5,
+    "seven_stacking": true,
+    "eight_counter": false,
+    "jack_on_jack": false,
+    "jack_finish": true,
+    "ace_again": false,
+    "nine_reverses": false,
+    "announce": "auto",
+    "mau_penalty": 2,
+    "rounds": 1,
+    "scoring": "win-lose"
+  },
+  "seats": 2,
+  "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+  "moves": [
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 13,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 10,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 20,
+          "wish": "clubs"
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 2,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 28,
+          "wish": "diamonds"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 29,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 24,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 16,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 12,
+          "wish": "spades"
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 9,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 14,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 11,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 19,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 22,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 17,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 1,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 3,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": "keep"
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": {
+        "play": {
+          "card": 6,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 0,
+      "move": "draw"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 30,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 26,
+          "wish": null
+        }
+      }
+    },
+    {
+      "seat": 1,
+      "move": "draw"
+    },
+    {
+      "seat": 1,
+      "move": "keep"
+    },
+    {
+      "seat": 0,
+      "move": {
+        "play": {
+          "card": 18,
+          "wish": null
+        }
+      }
+    }
+  ]
+}

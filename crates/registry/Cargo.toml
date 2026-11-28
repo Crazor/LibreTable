@@ -11,3 +11,4 @@ publish.workspace = true
 # Provides the rock-paper-scissors test game.
 libretable-conformance = { path = "../conformance" }
 libretable-game-core = { path = "../game-core" }
+libretable-mau-mau = { path = "../games/mau-mau" }

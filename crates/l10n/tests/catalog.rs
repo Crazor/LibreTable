@@ -9,15 +9,20 @@ use std::path::Path;
 use libretable_conformance::rock_paper_scissors;
 use libretable_game_core::Game;
 use libretable_l10n::{CATALOG, LOCALES, SOURCE_LOCALE, SOURCES};
+use libretable_mau_mau::MauMau;
 
 /// Message IDs declared by code, by origin. Every game adds its
 /// `MESSAGE_IDS` here under its game ID; the conformance suite checks that
 /// the game emits no ID outside that list. Client crates that depend on this
 /// crate check their own lists with `Localizer::missing` in their tests.
-const CODE_IDS: &[(&str, &[&str])] = &[(
-    rock_paper_scissors::RockPaperScissors::ID.as_str(),
-    rock_paper_scissors::MESSAGE_IDS,
-)];
+const CODE_IDS: &[(&str, &[&str])] = &[
+    ("cards", libretable_cards::MESSAGE_IDS),
+    (MauMau::ID.as_str(), libretable_mau_mau::MESSAGE_IDS),
+    (
+        rock_paper_scissors::RockPaperScissors::ID.as_str(),
+        rock_paper_scissors::MESSAGE_IDS,
+    ),
+];
 
 fn locales_dir() -> &'static Path {
     Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../locales"))

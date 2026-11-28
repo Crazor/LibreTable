@@ -27,6 +27,7 @@
 
 use libretable_conformance::rock_paper_scissors::{self, RockPaperScissors};
 use libretable_game_core::Game;
+use libretable_mau_mau::{self as mau_mau, MauMau};
 
 /// A game a front end can host: a [`Game`] whose types may move between
 /// threads, as a server hosting matches needs. Implemented for every such
@@ -98,6 +99,7 @@ macro_rules! games {
 }
 
 games! {
+    MauMau => mau_mau::MESSAGE_IDS,
     RockPaperScissors => rock_paper_scissors::MESSAGE_IDS,
 }
 

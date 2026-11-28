@@ -36,9 +36,12 @@ fn hello_lists_games_and_formats_messages() {
         assert_eq!(*dev, DEV);
         assert_eq!(locale, expected);
         assert_eq!(locales, &["en", "de"]);
-        assert_eq!(games[0].id, "rock-paper-scissors");
-        assert_eq!(games[0].variant, serde_json::json!({"rounds": 3}));
+        let ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
+        assert_eq!(ids, ["mau-mau", "rock-paper-scissors"]);
+        assert_eq!(games[1].variant, serde_json::json!({"rounds": 3}));
         assert_eq!(messages["rps-rock"], rock);
+        // Card names, the face keys of Mau-Mau's cards, come along.
+        assert!(messages.contains_key("card-queen-of-hearts"));
         // Arguments are left for the client to fill in.
         assert!(messages["server-page-seat"].contains("{$seat}"));
         for id in libretable_server::MESSAGE_IDS {
@@ -352,4 +355,21 @@ impl Idle for Client {
     fn connection_is_idle(&mut self) -> bool {
         errors(&self.send(ClientMessage::Seek { position: None })) == ["server-error-no-match"]
     }
+}
+
+#[test]
+fn mau_mau_plays_to_the_end_with_a_human_and_bots() {
+    let server = Server::new("test");
+    let mut client = Client::new(&server);
+    let replies = client.send(ClientMessage::Create {
+        game: "mau-mau".to_owned(),
+        seats: 3,
+        seed: Some(11),
+        variant: Some(serde_json::json!({"announce": "manual"})),
+        drivers: Some(vec![Driver::Human, Driver::Bot, Driver::Bot]),
+        observers: None,
+    });
+    assert_eq!(errors(&replies), Vec::<String>::new());
+    let state = play_out(&mut client, last_state(&replies));
+    assert_eq!(state.outcome.unwrap().seats.len(), 3);
 }

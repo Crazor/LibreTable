@@ -15,7 +15,7 @@ table help
 ```
 
 - `--lang <tag>` may be given anywhere and picks the locale; without it the CLI uses `LC_ALL`, `LC_MESSAGES` or `LANG` (`de_DE.UTF-8` → `de-DE`), else English. Unsupported locales fall back to English.
-- Games are picked by ID from `libretable-registry` (shared with the server; `src/registry.rs` erases the game type for the commands); adding a game is one line there. Currently only `rock-paper-scissors`.
+- Games are picked by ID from `libretable-registry` (shared with the server; `src/registry.rs` erases the game type for the commands); adding a game is one line there. Currently `mau-mau` and `rock-paper-scissors`.
 - `--variant` is the game's config as JSON (e.g. `'{"rounds":1}'`); default is the standard ruleset.
 - Seats are numbered from 0, as in records.
 - **Seeds.** `--seed <n>` seeds a master `GameRng`; the match seed and one seed per bot derive from it (`session::derive_seed`), so a whole run repeats exactly. `play` without `--seed` takes one from the clock and prints it; `simulate` defaults to 0.
@@ -35,7 +35,7 @@ Round: 1
 Score (seat 0): 0
 Score (seat 1): 0
 [0] Throw: seat 0, player board, owner only, stack
-    #0 token: rock (shape: rock)
+    #0 token: Rock (shape: rock)
 [1] Throw: seat 1, player board, owner only, stack
     (empty)
 [64] Last round: shared, tableau, public, row
@@ -44,7 +44,7 @@ Score (seat 1): 0
 
 - Indicators first, then zones in the game's order: `[id] label: owner, kind, visibility, layout`, then one component per line: `#id kind: key (attributes)`, or `face down`, plus rotation if not 0.
 - Choices: options by their message, components as the component plus its zone, zones as `[id] label`, numbers as is, subsets as their members.
-- Face keys (`rock`, `queen-of-hearts`) are shown as they are, with their attributes; they are not message IDs yet (see [localization](localization.md)).
+- Face-up components are named by their face key, which is a message ID (`card-queen-of-hearts` → "Queen of Hearts", see [localization](localization.md)), followed by their attributes.
 
 ## Localization
 

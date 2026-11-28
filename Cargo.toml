@@ -3,6 +3,8 @@ resolver = "3"
 members = [
     "crates/game-core",
     "crates/conformance",
+    "crates/cards",
+    "crates/games/mau-mau",
     "crates/l10n",
     "crates/bots",
     "crates/session",

@@ -249,9 +249,9 @@ function findComponent(table, id) {
 
 function faceText(face) {
   if (face === 'hidden') return t('server-page-face-down');
-  const attributes = face.shown.attributes.map((pair) => `${pair.name}: ${pair.value}`);
-  // Face keys are not message IDs yet (docs/design/localization.md).
-  return attributes.length ? `${face.shown.key} (${attributes.join(', ')})` : face.shown.key;
+  // A face key is the message ID of the component's name
+  // (docs/design/localization.md).
+  return t(face.shown.key);
 }
 
 function choiceText(choice, table) {

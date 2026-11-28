@@ -337,6 +337,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "libretable-cards"
+version = "0.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "libretable-cli"
 version = "0.0.0"
 dependencies = [
@@ -372,9 +379,22 @@ version = "0.0.0"
 dependencies = [
  "fluent-bundle",
  "fluent-syntax",
+ "libretable-cards",
  "libretable-conformance",
  "libretable-game-core",
+ "libretable-mau-mau",
  "unic-langid",
+]
+
+[[package]]
+name = "libretable-mau-mau"
+version = "0.0.0"
+dependencies = [
+ "libretable-cards",
+ "libretable-conformance",
+ "libretable-game-core",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -383,6 +403,7 @@ version = "0.0.0"
 dependencies = [
  "libretable-conformance",
  "libretable-game-core",
+ "libretable-mau-mau",
 ]
 
 [[package]]

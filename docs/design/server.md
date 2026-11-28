@@ -71,7 +71,7 @@ Every frame is a JSON object `{"v": 1, "type": "…", …}`. Field names are keb
 
 ## Localization
 
-All page text and every error are message IDs in `locales/*/server.ftl` (`server-…`), listed in `libretable_server::MESSAGE_IDS`. `welcome.messages` carries these plus every registered game's `MESSAGE_IDS`, formatted for the requested locale (negotiated like the CLI's `--lang`) with arguments left as `{$name}`; the page fills them in. Hence page messages use no plural selectors. Face keys are shown as they are, as in the text renderer. Tests: every listed ID has an `en` message, every `server-` message is listed, and every `server-…` ID in `apps/web/dev/` is listed (`tests/messages.rs`).
+All page text and every error are message IDs in `locales/*/server.ftl` (`server-…`), listed in `libretable_server::MESSAGE_IDS`. `welcome.messages` carries these plus every registered game's `MESSAGE_IDS`, formatted for the requested locale (negotiated like the CLI's `--lang`) with arguments left as `{$name}`; the page fills them in. Hence page messages use no plural selectors. Face-up components are named by their face key, a message ID ([localization](localization.md)); card names come with Mau-Mau's `MESSAGE_IDS`. Tests: every listed ID has an `en` message, every `server-` message is listed, and every `server-…` ID in `apps/web/dev/` is listed (`tests/messages.rs`).
 
 ## Tests
 

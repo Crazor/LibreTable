@@ -20,16 +20,16 @@ Checks at every decision point (also before each chance step) and at the end:
 | Termination | The match finishes within `step_bound`. |
 | Round trips | Config, state, every seat's and the spectator's view, legal moves, events, outcome and record survive JSON unchanged, and re-serializing gives identical text. |
 | Determinism | Replaying the record, before and after its JSON round trip, reaches the identical state and generator. |
-| Leak (scaffold) | A seat's view is identical in every declared hidden variant. |
+| Leak | A seat's view is identical in every declared hidden variant. Opaque IDs are reissued: per observer (every seat and the spectator), a component ID once shown face up is never face down later, and a face-down ID never shows up face down in another zone. This catches a card covered on a pile under its known ID and hidden cards moved or reshuffled into another zone without fresh IDs. |
 | Table | Every seat's and the spectator's table model passes `check_table`: unique zone and component IDs, no face shown in a hidden zone or in another seat's owner-only zone. |
 | Selection | `check_selection` for every seat: choice paths are unique and prefix-free, name only things on the seat's table, reach every legal move and each reached move applies. |
-| Messages | Before any match: `message_ids` is well-formed (kebab-case), duplicate-free and holds the game ID. During matches: every zone and indicator label, message indicator value, option choice of a legal move and reason of a rejected move is in `message_ids`. |
+| Messages | Before any match: `message_ids` is well-formed (kebab-case), duplicate-free and holds the game ID. During matches: every zone and indicator label, message indicator value, face key of a face-up component, option choice of a legal move and reason of a rejected move is in `message_ids`. |
 
 A `Failure` names the check, explains it and carries the partial record as JSON (empty for a malformed `message_ids`, found before any match), so the failing match replays in the CLI (`table replay`, see [cli](cli.md)).
 
-Not checked yet: the binary wire encoding, opaque-ID reissue on hidden shuffles (with Mau-Mau, issue 8), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
+Not checked yet: the binary wire encoding, opaque-ID reissue when hidden components are shuffled within one zone (a game's own rule tests cover it), game-declared invariants, bot-driven matches and cross-target determinism (native vs. Wasm). The omniscient view is not checked because the suite does not depend on the `dev` feature.
 
-Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 seats × 100 matches) and shows each check catching a deliberately broken game.
+Tests: `crates/conformance/tests/suite.rs` runs rock-paper-scissors (2, 3 and 7 seats × 100 matches) and shows each check catching a deliberately broken game. Mau-Mau runs the suite in `crates/games/mau-mau/tests/conformance.rs`.
 
 ## Rock-paper-scissors test game
 
